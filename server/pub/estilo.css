@@ -1,0 +1,54 @@
+.cuerpo {
+	margin:30px;
+}
+
+.elemento_centrado {
+	text-align: center;
+}
+
+.tab-contenido-mostrar {
+	height: 500px;
+	border-radius: 7px;
+	border: 1px solid;
+	border-color: #dfdfdf;
+	overflow-x: hidden;
+    overflow-y: scroll;
+    white-space:nowrap
+}
+
+.tab-contenido-mesas {
+	border-radius: 250px;
+	height: 100px;
+	width: 100px;
+	margin: 15px;
+}
+
+.tab-cabecera-mostrar {
+	background: green;
+    height: 65px;
+}
+
+.tabla-horizontal {
+	height: 300px;
+	overflow-x: hidden;
+    overflow-y: scroll;
+    white-space:nowrap
+}
+
+.pizarra {
+	background: green;
+    margin: 40px;
+    border: 5px solid;
+    border-color: saddlebrown;
+}
+
+@import url(http://fonts.googleapis.com/css?family=Open+Sans);
+
+body{background:#ddd;font-family:Open Sans;}
+
+#timer{margin:30px auto 0;width:400px;}
+#timer .container{display:table;background:#777;color:#eee;font-weight:bold;width:100%;text-align:center;text-shadow:1px 1px 4px #999;}
+#timer .container div{display:table-cell;font-size:60px;padding:10px;width:20px;}
+#timer .container .divider{width:10px;color:#ddd;}
+#btn-comenzar{box-sizing:border-box;background:#eee;border:none;margin:0 auto;padding:20px;width:100%;font-size:30px;color:#777;}
+#btn-comenzar:hover{background:#fff;}

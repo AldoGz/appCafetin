@@ -1,0 +1,70 @@
+.cuerpo {
+	height: 97%;
+	margin: 10 0 10 0;
+}
+
+.elemento_centrado {
+	text-align: center;
+}
+
+.tab-contenido-mostrar {
+	height: 500px;
+	border-radius: 7px;
+	border: 1px solid;
+	border-color: #dfdfdf;
+	overflow-x: hidden;
+    overflow-y: scroll;
+    white-space:nowrap
+}
+
+.tab-contenido-mesas {
+	border-radius: 250px;
+	height: 100px;
+	width: 100px;
+	margin: 15px;
+}
+
+.tab-cabecera-mostrar {
+	background: green;
+    height: 65px;
+}
+
+.tabla-horizontal {
+	height: 300px;
+	overflow-x: hidden;
+    overflow-y: scroll;
+    white-space:nowrap
+}
+
+.icentrar {
+	/*margin: 15 auto 15 auto;  */
+
+	width: 100%;
+    height: 45%;
+}	
+	
+
+.iscroll-utensilio {
+	overflow-x: hidden;
+    overflow-y: scroll;
+    height: 45%;
+    white-space: nowrap;
+}
+
+.iscroll-mesas {
+	overflow-x: hidden;
+    overflow-y: scroll;
+    height: 95%;
+    white-space: nowrap;
+}
+
+.fondo{
+	background-image: url("../../imagenes/fondo.jpg");
+	background-image: no-repeat;
+	background-image: fixed;
+	background-image: center;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
+}
