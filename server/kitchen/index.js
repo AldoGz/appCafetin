@@ -63,9 +63,16 @@ function cargarMesas(){
                     resultado.datos.msj.detalle
                 );
 
-                cinit(
+                /* cinit(
                     DOM.listado_t2_mesas_combinacion.find("div.tabla"),
                     resultado.datos.msj.tabla2,
+                    DOM.listado_t2_mesas_combinacion,
+                    resultado.datos.msj.detalle2
+                ); */
+
+                cinit(
+                    DOM.listado_t2_mesas_combinacion.find("div.tabla"),
+                    resultado.datos.msj.test,
                     DOM.listado_t2_mesas_combinacion,
                     resultado.datos.msj.detalle2
                 );
@@ -93,7 +100,7 @@ function mesas(tabla,data,listado,detalle){
 
     if ( tabla.length < data.length ) {
         var html = '';
-        switch(tabla.length){
+        /* switch(tabla.length){
             case 0:                
                 $.each(data, function(i,item){
                     var actual = new Date().getTime();
@@ -109,14 +116,15 @@ function mesas(tabla,data,listado,detalle){
                     }                    
                 });
                 break;
-            default:
+            default: */
+
                 $.each(data, function(i,item){                    
                     if ( tabla[i] === undefined ) {
                         var actual = new Date().getTime();
                         var inicio = new Date(item.fecha_registro).getTime();
                         var diff = new Date(actual-inicio);
                         
-                        if ( diff.getUTCMinutes() >= 5 && diff.getUTCSeconds() >= 0 ) {
+                        if ( diff.getUTCMinutes() >= 15 && diff.getUTCSeconds() >= 0 ) {
                             anularToo(item.id_mesa);
                             DOM.array.splice(detenerCronometro(item.id_mesa),1);  
                         }else{
@@ -125,11 +133,14 @@ function mesas(tabla,data,listado,detalle){
                         }                         
                     }
                 });
-                break;
-        }
+                /* break;
+        } */
+        console.log("data=>",data);
+        console.log("tabla=>",tabla)
+
         listado.append(html);        
     }
-    tomaPedido(tabla,detalle);
+    //tomaPedido(tabla,detalle);
 }
 
 
@@ -338,7 +349,7 @@ function mesas2(tabla,data,listado,detalle){
 
     if ( tabla.length < data.length ) {
         var html = '';
-        switch(tabla.length){
+        /* switch(tabla.length){
             case 0:
                 $.each(data, function(i,item){
                     var actual = new Date().getTime();
@@ -371,14 +382,30 @@ function mesas2(tabla,data,listado,detalle){
                     }
                 });
                 break;
-        }
+        } */
+        $.each(data, function(i,item){
+            if ( tabla[i] === undefined ) {
+                var actual = new Date().getTime();
+                var inicio = new Date(item.fecha_registro).getTime();
+                var diff = new Date(actual-inicio);
+                
+                if ( diff.getUTCMinutes() >= 5 && diff.getUTCSeconds() >= 0 ) {
+                    anularToo(item.id_mesa);
+                    DOM.array.splice(detenerCronometro(item.id_mesa),1);  
+                }else{
+                    html += iniciarMesa2(item,detalle);
+                    iniciarCronometro2(item.id_mesa, item.fecha_registro);       
+                }                         
+            }
+        });
         listado.append(html);        
     }
-    tomaPedido2(tabla,detalle);
+    tomaPedido2(tabla,data);
 }
 
 
 function iniciarMesa2(item,detalle){    
+    console.log(item);
     var html = '';
     html += '<div class="col-md-12 tabla" data-id="'+item.id_mesa+'">';
         html += '<div class="body" style="background: #000000;border: 17px solid;border-color: #dcd2cb;margin-bottom: 20px;">';
@@ -388,7 +415,7 @@ function iniciarMesa2(item,detalle){
                     html += item.mesa;
                     html += '<h5 id="ccronometro'+item.id_mesa+'">';
                         html += '<span class="badge badge-success badge-pill">';                        
-                            html += '<min id="cron02-'+item.id_mesa+'">00:00</min>';                            
+                            html += '<min id="cron02-'+item.id_mesa+'">--:--</min>';                            
                         html += '</span>';
                     html += '</h5>';
                 html += '</div>';  
@@ -398,14 +425,11 @@ function iniciarMesa2(item,detalle){
 
                 /*CUERPO*/
                 html += '<div id="cdetalle-pedido'+item.id_mesa+'">';
-                    $.each(detalle,function(key,value){
-                        var arr = [];
-                        if ( item.id_smesa == value.id_mesa ) {
-                            html += '<div class="btn btn-default btn-lg btn-block alert" role="alert" style="height: 68px;" onclick="cambiarEstado2('+value.id+","+item.id_mesa+')">';
-                                html += '<p class="alert-heading" style="font: oblique bold 75% cursive;">(Plato '+value.item+') '+value.cantidad+' '+value.producto+'</p>';
-                                html += '<p style="font: oblique bold 45% cursive;color: white;">'+value.nota+ '</p>';
-                            html += '</div>'; 
-                        } 
+                    $.each(item.children,function(key,value){                        
+                        html += '<div class="btn btn-default btn-lg btn-block alert" role="alert" style="height: 68px;" onclick="cambiarEstado2('+value.id+","+item.id_mesa+')">';
+                            html += '<p class="alert-heading" style="font: oblique bold 75% cursive;color: white;">(Plato '+value.item+') '+value.cantidad+' '+value.producto+'</p>';
+                            html += '<p style="font: oblique bold 45% cursive;color: white;">'+value.nota+ '</p>';
+                        html += '</div>';                          
                     });
                 html += '</div>';  
                 /*CUERPO*/
@@ -419,14 +443,15 @@ function iniciarMesa2(item,detalle){
 }
 
 
-function tomaPedido2(tabla,detalle){
+function tomaPedido2(tabla,data){
+    
     $.each(tabla,function(i,item){
         var html = '';
-        var referencia = this.dataset.id; 
-        $.each(detalle,function(key,value){
+        var referencia = this.dataset.id;
+        $.each(data[i].children,function(key,value){
             if ( referencia == value.id_mesa ) {                                
                 html += '<div class="btn btn-default btn-lg btn-block alert" role="alert" style="height: 68px;color: white;" onclick="cambiarEstado2('+value.id+","+value.id_mesa+')">';                     
-                    html += '<h5 class="alert-heading" style="font: oblique bold 75% cursive;">(Plato '+value.item+') '+value.cantidad+' '+value.producto+'</h5>';
+                    html += '<h5 class="alert-heading" style="font: oblique bold 75% cursive;color: white;">(Plato '+value.item+') '+value.cantidad+' '+value.producto+'</h5>';
                     html += '<p style="font: oblique bold 45% cursive;color: white;">'+value.nota+'</p>';
                 html += '</div>'; 
             }                                 

@@ -97,8 +97,8 @@ class Pedido extends Conexion {
             $toma_pedido = json_decode($this->getDetalle());
             $do = json_decode($observaciones);
 
-            for ($i=0; $i < count($toma_pedido) ; $i++) { 
-                $item = $toma_pedido[$i];
+            foreach ($toma_pedido as $item) {
+                
                 $campos_valores = [
                     "id_pedido" =>$id_pedido,                        
                     "id_producto"=>$item->id_producto,
@@ -106,14 +106,13 @@ class Pedido extends Conexion {
                     "precio"=>$item->precio,
                     "item"=>$item->item
                 ];
+                
                 $this->insert("toma_pedido", $campos_valores); 
 
                 $sql = "SELECT MAX(id) FROM toma_pedido WHERE id_pedido = :0";
-                $id_toma_pedido = intval($this->consultarValor($sql,[$id_pedido]));               
-                
-                for ($j=0; $j < count($do) ; $j++) { 
-                    $item2 = $do[$j];
+                $id_toma_pedido = intval($this->consultarValor($sql,[$id_pedido]));
 
+                foreach ($do as $item2) {
                     if ( ( intval($item->id_producto) == intval($item2->id_producto) ) && ( intval($item->item) == intval($item2->item)  ) ){
                         $campos_valores = [
                             "nota"=>$item2->nota,
@@ -124,7 +123,6 @@ class Pedido extends Conexion {
                         ];
                         $this->update("toma_pedido", $campos_valores,$campos_valores_where); 
                     }
-
                 }
             }
 
@@ -273,7 +271,9 @@ class Pedido extends Conexion {
 
     public function listarMesasEnEspera($tipo){
         try {
-             $sql = "SELECT 
+           
+
+            $sql = "SELECT 
                         tp.id,
                         me.id as id_mesa,
                         me.numero as mesa,
@@ -286,9 +286,14 @@ class Pedido extends Conexion {
                     INNER JOIN empleado em ON em.id = pe.id_empleado
                     INNER JOIN mesa me ON me.id = pe.id_mesa
                     WHERE cat.id_tipo_servicio = :0  AND pe.estado = 1 AND tp.estado = 1 AND tp.item = 0
-                    GROUP BY me.id
+                    GROUP BY me.id,tp.id
                     ORDER BY 1";
             $resultado["tabla"] = $this->consultarFilas($sql,[$tipo]);
+            /* $resultado["detalle"] = [];
+            $resultado["tabla2"] = [];
+            $resultado["detalle2"] = [];
+            $resultado["resumen"] = [];
+            $resultado["timbre"] = null; */
 
             $sql = "SELECT 
                         tp.id,
@@ -314,8 +319,64 @@ class Pedido extends Conexion {
                     INNER JOIN empleado em ON em.id = pe.id_empleado
                     INNER JOIN mesa me ON me.id = pe.id_mesa
                     WHERE cat.id_tipo_servicio = :0 AND pe.estado = 1 AND tp.estado = 1 AND tp.item = 0
-                    GROUP BY me.id,pro.nombre,tp.nota,tp.observaciones";
+                    GROUP BY me.id,tp.id,pro.nombre,tp.nota,tp.observaciones";
             $resultado["detalle"] = $this->consultarFilas($sql,[$tipo]);
+
+            $array = [];
+
+            $sql = "SELECT 
+                        pe.id,
+                        me.id as id_mesa,
+                        me.numero as mesa,
+                        CONCAT(em.nombres,' ',em.apellido_paterno) as empleado,
+                        pe.fecha_registro
+                    FROM pedido pe 
+                    INNER JOIN empleado em ON pe.id_empleado = em.id
+                    INNER JOIN mesa me ON pe.id_mesa = me.id 
+                    INNER JOIN toma_pedido tp ON pe.id = tp.id_pedido
+                    INNER JOIN producto pro ON tp.id_producto = pro.id 
+                    INNER JOIN categoria cat ON pro.id_categoria = cat.id
+                    WHERE pe.estado = 1 AND tp.estado = 1 AND cat.id_tipo_servicio = :0
+                    GROUP BY pe.id
+                    ORDER BY 1";
+            $pedidos = $this->consultarFilas($sql,[$tipo]);
+
+            foreach ($pedidos as $pedido) {
+                $sql = "SELECT 
+                        pe.id as id_pedido,
+                        tp.id,
+                        pe.id_mesa,
+                        pro.nombre as producto,
+                        tp.cantidad,
+                        tp.precio,
+                        IF(tp.nota IS NULL AND tp.observaciones IS NULL,
+                        'NINGUNO',
+                        IF(tp.nota IS NULL AND tp.observaciones IS NOT NULL,
+                                tp.observaciones,
+                                IF(tp.nota IS NOT NULL AND tp.observaciones IS NULL,
+                                    tp.nota,
+                                    CONCAT(tp.nota,' - ',tp.observaciones)
+                                )
+                            )
+                        ) as nota,
+                        tp.estado,                        
+                        tp.item 
+                    FROM pedido pe 
+                    INNER JOIN toma_pedido tp ON pe.id = tp.id_pedido 
+                    INNER JOIN producto pro ON tp.id_producto = pro.id
+                    INNER JOIN categoria cat ON cat.id = pro.id_categoria
+                    WHERE pe.estado = 1 AND tp.estado = 1 AND cat.id_tipo_servicio = :0 AND pe.id = :1";
+                $detalles = $this->consultarFilas($sql,[$tipo,$pedido["id"]]);
+
+                if( count($detalles) > 0 ){
+                    $pedido["children"] = $detalles;
+                }
+                array_push($array,$pedido);
+            }
+
+            $resultado["test"] = $array;
+
+
 
             $sql = "SELECT 
                         tp.id,
@@ -330,7 +391,7 @@ class Pedido extends Conexion {
                     INNER JOIN empleado em ON em.id = pe.id_empleado
                     INNER JOIN mesa me ON me.id = pe.id_mesa
                     WHERE cat.id_tipo_servicio = :0  AND pe.estado = 1 AND tp.estado = 1 AND tp.item > 0
-                    GROUP BY me.id
+                    GROUP BY me.id,tp.id
                     ORDER BY 1";
             $resultado["tabla2"] = $this->consultarFilas($sql,[$tipo]);          
 
@@ -386,7 +447,7 @@ class Pedido extends Conexion {
                     INNER JOIN empleado em ON em.id = pe.id_empleado
                     INNER JOIN mesa me ON me.id = pe.id_mesa
                     WHERE cat.id_tipo_servicio = :0 AND pe.estado = 1 AND tp.estado = 1
-                    GROUP BY pro.nombre,tp.nota,tp.observaciones";
+                    GROUP BY tp.id,pro.nombre,tp.nota,tp.observaciones";
             $resultado["resumen"] = $this->consultarFilas($sql,[$tipo]); 
 
             $sql = "SELECT COUNT(*) FROM toma_pedido tp

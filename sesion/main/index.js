@@ -32,6 +32,8 @@ function setEventos() {
           if ( resultado.estado === 200 ) {
               if (resultado.datos.rpt === true) {                
                   if ( resultado.datos.estado === true ) {
+                        console.log(resultado.datos.msj.id_tipo_empleado);
+                        //return;
                       switch(resultado.datos.msj.id_tipo_empleado){
                           case "1":
                               document.location.href = "../../administrador/vista/tipo_empleado/";

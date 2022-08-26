@@ -1005,13 +1005,13 @@ function acciones_pedido(){
     $.each(DOM.listado_cocina.find("div.card"), function(i,item){
         var self = $(this);
         if ( i > 1 ) {
-            $.each(self.find("select"), function(i,item){
+            $.each(self.find("select"), function(key,value){
                 var self2 = $(this);
                 var nodo = this.parentElement;
                 var id_producto = parseInt($(nodo).find("input").eq(1).val());
                 var cantidad = parseInt(self2.val());
                 var precio = parseFloat($(nodo).find("input").eq(0).val());
-                var item = 0;                
+                var item = key + 1;                
                 if ( parseInt(self2.val()) > 0 ) {
                     var obj = {
                         item : item,
@@ -1027,13 +1027,13 @@ function acciones_pedido(){
 
     $.each(DOM.listado_bar.find("div.card"), function(i,item){
         var self = $(this);        
-        $.each(self.find("select"), function(i,item){
+        $.each(self.find("select"), function(key,value){
             var self2 = $(this);
             var nodo = this.parentElement;
             var id_producto = parseInt($(nodo).find("input").eq(1).val());
             var cantidad = parseInt(self2.val());
             var precio = parseFloat($(nodo).find("input").eq(0).val());
-            var item = 0;                
+            var item = key + 1;                
             if ( parseInt(self2.val()) > 0 ) {
                 var obj = {
                     item : item,
@@ -1048,6 +1048,8 @@ function acciones_pedido(){
 
     var json = JSON.stringify(toma_pedido);
     var json2 = JSON.stringify(DOM.array);
+
+    console.log(json);
 
     var funcion = function (resultado) {        
         if (resultado.estado === 200) {
