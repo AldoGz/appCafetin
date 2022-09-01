@@ -321,14 +321,15 @@ function GuardarFacturacion(){
         }
     }
     var producto = '';
-    var cantidad = '';
+    var cantidad = 0;
     $.each(DOM.listado_apagar.find("tr"),function(i,item){
-        var dataset = this.dataset.id;
-        if ( this.dataset.id !== undefined ) {
-            producto += $(this).find("td").eq(0).find("h5").eq(0).html();
-            cantidad += $(this).find("td").eq(1).html();
-        }        
+        //var dataset = this.dataset.id;
+        //if ( this.dataset.id !== undefined ) {
+            producto += $(this).find("td").eq(1).find("h5").eq(0).html();
+            cantidad += parseInt($(this).find("td").eq(2).html());
+        //}        
     });
+
 
     var json = JSON.stringify(DOM.array);
 
@@ -473,14 +474,14 @@ function setEventos(){
                     if (resultado.datos.rpt === true) {                    
                         var datos = resultado.datos.msj;
                         setTimeout(function(){ 
-                            DOM.razon_social.val(datos.documento.informacion.razon_social); 
-                            var direccion = datos.documento.informacion.domicilio_fiscal === "-" ?
+                            DOM.razon_social.val(datos.documento.informacion.razonSocial); 
+                            var direccion = datos.documento.informacion.direccion === "-" ?
                                 "SIN DOMICILIO FISCAL" : 
-                                datos.documento.informacion.domicilio_fiscal;                                
+                                datos.documento.informacion.direccion;                                
                             $("#direccion").val(direccion);
 
                             var html = '';
-                            if ( datos.puntos.documento === null ) {
+                            if ( !datos.puntos  ) {
                                 html += '<tr>';
                                     html += '<td colspan="3" class="text-center">Sin resultados</td>';
                                 html += '</tr>'; 
@@ -517,7 +518,7 @@ function setEventos(){
                     if (resultado.datos.rpt === true) { 
                         var datos = resultado.datos.msj;
                         setTimeout(function(){ 
-                            DOM.razon_social.val(datos.documento.informacion.razon_social);  
+                            DOM.razon_social.val(datos.documento.informacion.nombres+" "+datos.documento.informacion.apellidoPaterno+" "+datos.documento.informacion.apellidoMaterno);  
 
                             var html = '';
                             if ( datos.puntos.documento === null ) {
