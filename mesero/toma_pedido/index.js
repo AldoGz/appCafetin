@@ -803,7 +803,7 @@ function confirmar_accion(){
 
 function acciones_entrega_unitaria(){
     console.log("LLEGUE ACA");
-    /* var funcion = function (resultado) {        
+    var funcion = function (resultado) {        
         if (resultado.estado === 200) {
             if ( resultado.datos.rpt === true ){
                 limpiar_entrega_unitaria();
@@ -820,7 +820,7 @@ function acciones_entrega_unitaria(){
         data_in :{
             p_id : DOM.nombre_cliente.val()
         }
-    }, funcion); */
+    }, funcion);
 }
 
 function limpiar_entrega_unitaria(){
@@ -940,7 +940,7 @@ function limpiar_espera(){
     DOM.nombre_cliente.val("");
     listarPedidoEspera(DOM.codigo_mesa.val());
     setTimeout(function(){
-        if ( DOM.listado_pedido_espera.find("tr").length === 0 ) {
+        if ( DOM.listado_pedido_espera.find("tr").length <= 1 ) {
             DOM.codigo_mesa.val("");
             DOM.mesa.val("");
             DOM.estado_convencional.val("");
@@ -1292,41 +1292,56 @@ function cargarMesas(){
                 $.each(resultado.datos.msj, function (i, item) { 
                     var texto = "secondary";
                     var actividad = "";
-                    if ( !bandera ) {
-                        if ( parseInt(item.estado_convencional) === 1 && DOM.sesion != "super" ) {
-                            if ( parseInt(item.disponibilidad) === 0 ) {
-                                texto = 'info';
-                                actividad = 'onclick="abrirPedido('+item.id+",'"+item.numero+"','"+item.estado_convencional+"'"+')"';
-                            }
-                            if ( parseInt(item.disponibilidad) === 1 ) {
-                                texto = 'danger';
-                                actividad = '';
-                            }
+                    /* CONDICIONAL PARA SUPER */
+                    if( DOM.sesion === "super" ){
+                        if ( parseInt(item.espera) > 0 ) {
+                            texto = 'warning';
+                            actividad = 'onclick="abrirEspera('+item.id+",'"+item.numero+"','"+item.estado_convencional+"'"+')"';
                         }
 
-                        if ( parseInt(item.estado_convencional) === 2 && DOM.sesion != "super" ) {
-                            if ( parseInt(item.espera) === 0 ) {
-                                texto = 'dark';                                
-                                actividad = 'onclick="abrirPedido('+item.id+",'"+item.numero+"','"+item.estado_convencional+"'"+')"';
-                            } 
+                        html += '<button type="button" class="btn btn-'+texto+' btn-block" '+actividad+'>'+ item.numero+'</button>';
 
-                            if ( parseInt(item.espera) > 0 ) {
-                                texto = 'warning';
-                                actividad = 'onclick="abrirEspera('+item.id+",'"+item.numero+"','"+item.estado_convencional+"'"+')"';
+                    }else{
+                        if ( !bandera ) {
+                            if ( parseInt(item.estado_convencional) === 1 ) {
+                                if ( parseInt(item.disponibilidad) === 0 ) {
+                                    texto = 'info';
+                                    actividad = 'onclick="abrirPedido('+item.id+",'"+item.numero+"','"+item.estado_convencional+"'"+')"';
+                                }
+                                if ( parseInt(item.disponibilidad) === 1 ) {
+                                    texto = 'danger';
+                                    actividad = '';
+                                }
                             }
-
-                            if ( parseInt(item.preparado) > 0 ) {
-                                texto = 'success';
-                                actividad = 'onclick="abrirEntrega('+item.id+",'"+item.numero+"','"+item.estado_convencional+"'"+')"';
-                            }
-
-                            if ( parseInt(item.disponibilidad) === 1 ) {
-                                texto = 'danger';
-                                actividad = '';
+    
+                            if ( parseInt(item.estado_convencional) === 2 ) {
+                                if ( parseInt(item.espera) === 0 ) {
+                                    texto = 'dark';                                
+                                    actividad = 'onclick="abrirPedido('+item.id+",'"+item.numero+"','"+item.estado_convencional+"'"+')"';
+                                } 
+    
+                                if ( parseInt(item.espera) > 0 ) {
+                                    texto = 'warning';
+                                    actividad = 'onclick="abrirEspera('+item.id+",'"+item.numero+"','"+item.estado_convencional+"'"+')"';
+                                }
+    
+                                if ( parseInt(item.preparado) > 0 ) {
+                                    texto = 'success';
+                                    actividad = 'onclick="abrirEntrega('+item.id+",'"+item.numero+"','"+item.estado_convencional+"'"+')"';
+                                }
+    
+                                if ( parseInt(item.disponibilidad) === 1 ) {
+                                    texto = 'danger';
+                                    actividad = '';
+                                }
                             }
                         }
+                        html += '<button type="button" class="btn btn-'+texto+' btn-block" '+actividad+'>'+ item.numero+'</button>';
+
                     }
-                    html += '<button type="button" class="btn btn-'+texto+' btn-block" '+actividad+'>'+ item.numero+'</button>';
+
+
+                    
                 });
                 DOM.listado_mesas.html(html);                
             }else{
@@ -1345,7 +1360,7 @@ function abrirEntrega(id_mesa,mesa,estado_convencional){
     DOM.codigo_mesa.val(id_mesa);
     DOM.mesa.val(mesa);
     DOM.estado_convencional.val(estado_convencional);
-    DOM.blkEntregar.find(".titulo").text(mesa.substring(0,1)+ mesa.toLowerCase().substring(1)+": Pedido entrega");
+    DOM.blkEntregar.find(".titulo").text(mesa.substring(0,1)+ mesa.toLowerCase().substring(1)+": Pedido entrega o espera");
     listarPedidoEntrega(id_mesa);
 }
 
@@ -1374,8 +1389,8 @@ function listarPedidoEntrega(id_mesa){
                                 html += '<button type="button" class="btn btn-xs btn-primary" onclick="confirmar('+"'¿Desea entregar este pedido?','entregar_unitario',"+item.id+')" title="Entrega"><i class="fas fa-file-import"></i></button>';                
                                 html += '&nbsp;&nbsp;';
                             }
-                            if ( item.estado === "4" ) {
-                                html += '<button type="button" class="btn btn-xs btn-warning" onclick="confirmar('+"'¿Desea activar este pedido?','activar2',"+item.id+')" title="Activar"><i class="far fa-check-square"></i></button>';                
+                            if ( item.estado === "1" ) {
+                                html += '<button type="button" class="btn btn-info btn-xs" data-toggle="modal" data-target="#modal-editar-pedido" onclick="editar('+item.id+')" title="Cambiar cantidad de pedido"><i class="fas fa-pen"></i></button>';
                                 html += '&nbsp;&nbsp;';
                             }
                         html += '</td>';
@@ -1451,13 +1466,7 @@ function listarPedidoEspera(id_mesa){
                                 if( DOM.sesion == "super" ) {
                                     html += '<button type="button" class="btn btn-xs btn-danger" onclick="confirmar('+"'¿Desea anular este pedido?','anular',"+item.id+')" title="Anular"><i class="fa fa-times"></i></button>';                
                                     html += '&nbsp;&nbsp;';
-                                }
-
-                                
-                            }
-                            if ( item.estado === "4" ) {
-                                html += '<button type="button" class="btn btn-xs btn-warning" onclick="confirmar('+"'¿Desea activar este pedido?','activar',"+item.id+')" title="Activar"><i class="far fa-check-square"></i></button>';                
-                                html += '&nbsp;&nbsp;';
+                                }                                
                             }
                         html += '</td>';
                     html += '</tr>';

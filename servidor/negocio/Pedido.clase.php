@@ -149,12 +149,12 @@ class Pedido extends Conexion {
                     tp.precio,
                     tp.cantidad*tp.precio as importe,
                     tp.estado,
-                    tp.nota,
+                    IF( tp.nota IS NULL, '',tp.nota) as nota,
                     tp.item
                     FROM toma_pedido tp 
                     INNER JOIN pedido pe ON pe.id = tp.id_pedido
                     INNER JOIN producto pro ON pro.id = tp.id_producto
-                    WHERE pe.id_mesa = :0 AND tp.estado in(1,4) AND pe.estado = 1
+                    WHERE pe.id_mesa = :0 AND tp.estado = 1 AND pe.estado = 1
                     ORDER BY 1";
             $resultado["pedidos"] = $this->consultarFilas($sql,[$this->getId_mesa()]);
 
@@ -180,12 +180,12 @@ class Pedido extends Conexion {
                     tp.precio,
                     tp.cantidad*tp.precio as importe,
                     tp.estado,
-                    tp.nota, 
+                    IF( tp.nota IS NULL, '',tp.nota) as nota, 
                     tp.item
                     FROM toma_pedido tp 
                     INNER JOIN pedido pe ON pe.id = tp.id_pedido
                     INNER JOIN producto pro ON pro.id = tp.id_producto
-                    WHERE pe.id_mesa = :0 AND tp.estado in(2,4) AND pe.estado = 1
+                    WHERE pe.id_mesa = :0 AND tp.estado in(1,2) AND pe.estado = 1
                     ORDER BY 1";
             $resultado["pedidos"] = $this->consultarFilas($sql,[$this->getId_mesa()]);
 
@@ -1188,37 +1188,27 @@ class Pedido extends Conexion {
     public function darBaja($id,$estado) {
         $this->beginTransaction();
         try {
-            $sql = "SELECT * FROM toma_pedido WHERE id_pedido = (SELECT id_pedido FROM toma_pedido WHERE id = :0) AND estado < 4";
-            $toma_pedido = $this->consultarFilas($sql,[$id]);
-
-            if ( intval($estado) == 4 && count($toma_pedido) == 1 ) {
-                $sql = "SELECT id_pedido FROM toma_pedido WHERE id = :0";
-                $id_pedido = $this->consultarFila($sql,[$id]);
-
-                $campos_valores = [                
-                    "estado"=>3
-                ];
-                $campos_valores_where = ["id"=>$id_pedido["id_pedido"]];
-                $this->update("pedido", $campos_valores,$campos_valores_where);
-
-                $sql = "SELECT id FROM mesa WHERE id = (SELECT id_mesa FROM pedido WHERE id = :0)";
-                $id_mesa = $this->consultarFila($sql,[$id_pedido["id_pedido"]]);
-
-                $campos_valores = [                
-                    "estado_convencional"=>1
-                ];
-                $campos_valores_where = ["id"=>$id_mesa["id"]];
-                $this->update("mesa", $campos_valores,$campos_valores_where);
-            }
-
             $campos_valores = [                
                 "estado"=>$estado
             ];
             $campos_valores_where = ["id"=>$id];
             $this->update("toma_pedido", $campos_valores,$campos_valores_where);
-            $texto = $estado == "1" ? "Se activado correctamente" : "Se anulado correctamente";
+
+            $sql = "SELECT id_pedido FROM toma_pedido WHERE id = :0";
+            $id_pedido = $this->consultarValor($sql,[$id]); 
+
+            $sql = "SELECT COUNT(id_pedido) FROM toma_pedido WHERE id_pedido = :0 AND estado = 1";
+            $cantidad = $this->consultarValor($sql,[$id_pedido]);
+
+            if( intval($cantidad) <= 1 ){
+                $campos_valores = [                
+                    "estado"=>3
+                ];
+                $campos_valores_where = ["id"=>$id_pedido];
+                $this->update("pedido", $campos_valores,$campos_valores_where);
+            }           
             $this->commit();
-            return array("rpt"=>true,"msj"=>$texto);
+            return array("rpt"=>true,"msj"=>"Se anulado correctamente");
         } catch (Exception $exc) {
             return array("rpt"=>false,"msj"=>$exc);
             $this->rollBack();
