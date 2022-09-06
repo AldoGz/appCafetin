@@ -802,7 +802,8 @@ function confirmar_accion(){
 }
 
 function acciones_entrega_unitaria(){
-    var funcion = function (resultado) {        
+    console.log("LLEGUE ACA");
+    /* var funcion = function (resultado) {        
         if (resultado.estado === 200) {
             if ( resultado.datos.rpt === true ){
                 limpiar_entrega_unitaria();
@@ -819,7 +820,7 @@ function acciones_entrega_unitaria(){
         data_in :{
             p_id : DOM.nombre_cliente.val()
         }
-    }, funcion);
+    }, funcion); */
 }
 
 function limpiar_entrega_unitaria(){
@@ -1292,8 +1293,8 @@ function cargarMesas(){
                     var texto = "secondary";
                     var actividad = "";
                     if ( !bandera ) {
-                        if ( parseInt(item.estado_convencional) === 1 ) {
-                            if ( parseInt(item.disponibilidad) === 0 && DOM.sesion != "super") {
+                        if ( parseInt(item.estado_convencional) === 1 && DOM.sesion != "super" ) {
+                            if ( parseInt(item.disponibilidad) === 0 ) {
                                 texto = 'info';
                                 actividad = 'onclick="abrirPedido('+item.id+",'"+item.numero+"','"+item.estado_convencional+"'"+')"';
                             }
@@ -1303,8 +1304,8 @@ function cargarMesas(){
                             }
                         }
 
-                        if ( parseInt(item.estado_convencional) === 2  ) {
-                            if ( parseInt(item.espera) === 0 && DOM.sesion != "super") {
+                        if ( parseInt(item.estado_convencional) === 2 && DOM.sesion != "super" ) {
+                            if ( parseInt(item.espera) === 0 ) {
                                 texto = 'dark';                                
                                 actividad = 'onclick="abrirPedido('+item.id+",'"+item.numero+"','"+item.estado_convencional+"'"+')"';
                             } 

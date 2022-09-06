@@ -385,17 +385,17 @@ function mesas2(tabla,data,listado,detalle){
         } */
         $.each(data, function(i,item){
             if ( tabla[i] === undefined ) {
-                var actual = new Date().getTime();
+                /* var actual = new Date().getTime();
                 var inicio = new Date(item.fecha_registro).getTime();
                 var diff = new Date(actual-inicio);
                 
                 if ( diff.getUTCMinutes() >= 5 && diff.getUTCSeconds() >= 0 ) {
                     anularToo(item.id_mesa);
                     DOM.array.splice(detenerCronometro(item.id_mesa),1);  
-                }else{
+                }else{ */
                     html += iniciarMesa2(item,detalle);
                     iniciarCronometro2(item.id_mesa, item.fecha_registro);       
-                }                         
+                //}                         
             }
         });
         listado.append(html);        
@@ -486,10 +486,10 @@ function iniciarCronometro2(id_mesa, fecha_registro){
             $("#ccronometro"+actividad)[0].children[0].classList.remove("badge-warning");
             $("#ccronometro"+actividad)[0].children[0].classList.add("badge-danger");
         } 
-        if ( diff.getUTCMinutes() >= 5 && diff.getUTCSeconds() >= 0 ) {
+        /* if ( diff.getUTCMinutes() >= 5 && diff.getUTCSeconds() >= 0 ) {
             anularToo(id_mesa);
             DOM.array.splice(detenerCronometro(id_mesa),1);  
-        }
+        } */
     }, 1000);     
     DOM.array2.push({id_mesa:id_mesa,interval:tiempo_corriendo});    
 }
