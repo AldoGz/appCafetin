@@ -234,6 +234,20 @@ class Empleado extends Conexion {
         }
     }
 
+    public function obtenerSesionDatos() {
+        try {
+            session_name("CAFETIN");
+            session_start();
+
+            $sql = "SELECT * FROM empleado WHERE id =:0";
+            $resultado = $this->consultarFila($sql,[$_SESSION["cod_usuario"]]);
+            return array("rpt"=>true,"msj"=>$resultado);
+        } catch (Exception $exc) {
+            return array("rpt"=>false,"msj"=>$exc);
+            throw $exc;
+        }
+    }
+
     public function darBaja() {
         $this->beginTransaction();
         try {

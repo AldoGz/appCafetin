@@ -138,6 +138,10 @@ class Pedido extends Conexion {
 
     public function listarPedidoMeseroEspera(){
         try {
+            session_name("CAFETIN");
+            session_start();
+            $resultado["mesero"] = $_SESSION["cod_usuario"];
+
             $sql = "SELECT 
                     tp.id,
                     pro.nombre as producto,

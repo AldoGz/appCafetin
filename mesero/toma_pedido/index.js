@@ -1,7 +1,9 @@
 var DOM = {};
 
 $(document).ready(function () {
+    
     setDOM();
+    cargarAll();
     listarCocina();
     listarBar();
     setEventos();
@@ -70,6 +72,10 @@ function setDOM(){
     DOM.observaciones_sub  = $("#observaciones_sub");
     DOM.posicion_sub = $("#posicion_sub");
     DOM.tb_producto_categoria = $("#tb_producto_categoria");
+
+    DOM.sesion = ""; 
+
+    DOM.btnPedirMesero = $("#btn-pedir-mesero");
 
 
 }
@@ -1144,6 +1150,22 @@ function is(ref,id,nodo){
     } 
 }
 
+function cargarAll(){
+    var funcion = function (resultado) {   
+        if (resultado.estado === 200) {
+            DOM.sesion = resultado.datos.msj.dni;
+            if( DOM.sesion == "super" ){
+                DOM.btnPedirMesero.hide();
+            }             
+        }
+    }
+
+    new Ajxur.Api({
+        modelo: "Empleado",
+        metodo: "obtenerSesionDatos"
+    }, funcion);
+}
+
 function setEventos(){
     DOM.nombre_cliente.keypress(function(e){
         if ( e.which === 13 ) {
@@ -1271,7 +1293,7 @@ function cargarMesas(){
                     var actividad = "";
                     if ( !bandera ) {
                         if ( parseInt(item.estado_convencional) === 1 ) {
-                            if ( parseInt(item.disponibilidad) === 0 ) {
+                            if ( parseInt(item.disponibilidad) === 0 && DOM.sesion != "super") {
                                 texto = 'info';
                                 actividad = 'onclick="abrirPedido('+item.id+",'"+item.numero+"','"+item.estado_convencional+"'"+')"';
                             }
@@ -1281,8 +1303,8 @@ function cargarMesas(){
                             }
                         }
 
-                        if ( parseInt(item.estado_convencional) === 2 ) {
-                            if ( parseInt(item.espera) === 0 ) {
+                        if ( parseInt(item.estado_convencional) === 2  ) {
+                            if ( parseInt(item.espera) === 0 && DOM.sesion != "super") {
                                 texto = 'dark';                                
                                 actividad = 'onclick="abrirPedido('+item.id+",'"+item.numero+"','"+item.estado_convencional+"'"+')"';
                             } 
@@ -1419,10 +1441,18 @@ function listarPedidoEspera(id_mesa){
                         html += '<td class="text-center">S/. '+item.importe+'</td>';
                         html += '<td class="text-center">';
                             if ( item.estado === "1" ) {
-                                html += '<button type="button" class="btn btn-info btn-xs" data-toggle="modal" data-target="#modal-editar-pedido" onclick="editar('+item.id+')" title="Editar"><i class="fas fa-pen"></i></button>';
-                                html += '&nbsp;&nbsp;';
-                                html += '<button type="button" class="btn btn-xs btn-danger" onclick="confirmar('+"'¿Desea anular este pedido?','anular',"+item.id+')" title="Anular"><i class="fa fa-times"></i></button>';                
-                                html += '&nbsp;&nbsp;';
+                                if( DOM.sesion != "super"){
+                                    html += '<button type="button" class="btn btn-info btn-xs" data-toggle="modal" data-target="#modal-editar-pedido" onclick="editar('+item.id+')" title="Cambiar cantidad de pedido"><i class="fas fa-pen"></i></button>';
+                                    html += '&nbsp;&nbsp;';
+                                }
+                                
+
+                                if( DOM.sesion == "super" ) {
+                                    html += '<button type="button" class="btn btn-xs btn-danger" onclick="confirmar('+"'¿Desea anular este pedido?','anular',"+item.id+')" title="Anular"><i class="fa fa-times"></i></button>';                
+                                    html += '&nbsp;&nbsp;';
+                                }
+
+                                
                             }
                             if ( item.estado === "4" ) {
                                 html += '<button type="button" class="btn btn-xs btn-warning" onclick="confirmar('+"'¿Desea activar este pedido?','activar',"+item.id+')" title="Activar"><i class="far fa-check-square"></i></button>';                

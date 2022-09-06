@@ -36,7 +36,7 @@ function setEventos() {
                         //return;
                       switch(resultado.datos.msj.id_tipo_empleado){
                           case "1":
-                              document.location.href = "../../administrador/vista/tipo_empleado/";
+                              document.location.href = "../../administrador/vista/categoria/";
                               break;
                           case "2":
                               document.location.href = "../../mesero";

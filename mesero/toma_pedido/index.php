@@ -119,7 +119,7 @@
                     <div class="card-footer">
                         <div class="col-md-12">
                             <div class="row justify-content-md-center">
-                                <div class="col-md-3">
+                                <div class="col-md-3" id="btn-pedir-mesero">
                                     <button type="button" class="btn btn-success btn-block" onclick="abrirMasPedido()"><i class="fas fa-plus"></i> Pedidos</button>
                                 </div>
                                 <div class="col-md-3">
