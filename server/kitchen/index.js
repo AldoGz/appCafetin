@@ -383,6 +383,7 @@ function mesas2(tabla,data,listado,detalle){
                 });
                 break;
         } */
+        
         $.each(data, function(i,item){
             if ( tabla[i] === undefined ) {
                 /* var actual = new Date().getTime();
@@ -407,7 +408,7 @@ function mesas2(tabla,data,listado,detalle){
 function iniciarMesa2(item,detalle){    
     console.log(item);
     var html = '';
-    html += '<div class="col-md-12 tabla" data-id="'+item.id_mesa+'">';
+    html += '<div class="col-md-4 tabla" data-id="'+item.id_mesa+'">';
         html += '<div class="body" style="background: #000000;border: 17px solid;border-color: #dcd2cb;margin-bottom: 20px;">';
             html += '<div style="margin: 20px;color: white;">';
                 /*CABECERA*/
@@ -427,7 +428,7 @@ function iniciarMesa2(item,detalle){
                 html += '<div id="cdetalle-pedido'+item.id_mesa+'">';
                     $.each(item.children,function(key,value){                        
                         html += '<div class="btn btn-default btn-lg btn-block alert" role="alert" style="height: 68px;" onclick="cambiarEstado2('+value.id+","+item.id_mesa+')">';
-                            html += '<p class="alert-heading" style="font: oblique bold 75% cursive;color: white;">(Plato '+value.item+') '+value.cantidad+' '+value.producto+'</p>';
+                            html += '<p class="alert-heading" style="font: oblique bold 75% cursive;color: white;">'+value.cantidad+' '+value.producto+'</p>';
                             html += '<p style="font: oblique bold 45% cursive;color: white;">'+value.nota+ '</p>';
                         html += '</div>';                          
                     });
@@ -451,7 +452,7 @@ function tomaPedido2(tabla,data){
         $.each(data[i].children,function(key,value){
             if ( referencia == value.id_mesa ) {                                
                 html += '<div class="btn btn-default btn-lg btn-block alert" role="alert" style="height: 68px;color: white;" onclick="cambiarEstado2('+value.id+","+value.id_mesa+')">';                     
-                    html += '<h5 class="alert-heading" style="font: oblique bold 75% cursive;color: white;">(Plato '+value.item+') '+value.cantidad+' '+value.producto+'</h5>';
+                    html += '<h5 class="alert-heading" style="font: oblique bold 75% cursive;color: white;">'+value.cantidad+' '+value.producto+'</h5>';
                     html += '<p style="font: oblique bold 45% cursive;color: white;">'+value.nota+'</p>';
                 html += '</div>'; 
             }                                 

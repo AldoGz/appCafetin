@@ -14,19 +14,19 @@
             </div>            
         </div>
         <div class="card-body tab-contenido-mostrar">
-            <div class="row">
-                <div class="col-md-4">
+            <div class="row" id="listado-t2-mesas-combinacion">
+                <!-- <div class="col-md-4">
                     Plato
                     <div id="listado-t2-mesas"></div>
-                </div>
-                <div class="col-md-4">
-                    Plato combinados
-                    <div id="listado-t2-mesas-combinacion"></div>
-                </div>
-                <div class="col-md-4" style="">
+                </div> -->
+                
+                        <!-- <div id="listado-t2-mesas-combinacion"></div> -->
+                    
+                
+                <!-- <div class="col-md-4" style="">
                     Detalle
                     <div id="listado-t2-resumen"></div>
-                </div>
+                </div> -->
             </div>
         </div>
 
