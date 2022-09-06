@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost:3306
--- Tiempo de generación: 01-09-2022 a las 23:42:47
+-- Tiempo de generación: 06-09-2022 a las 22:47:46
 -- Versión del servidor: 5.7.33
 -- Versión de PHP: 7.4.19
 
@@ -101,7 +101,8 @@ INSERT INTO `empleado` (`id`, `dni`, `nombres`, `apellido_paterno`, `apellido_ma
 (4, 'cocina', 'GLADIS Y SOFIA', 'REQUEJO', 'X', 0, '', NULL, NULL, '2019-02-22 00:44:14', 1, 4),
 (5, 'bar', 'ROBIS', 'PADRON', '   ', 1, '', NULL, NULL, '2019-02-22 18:51:31', 1, 5),
 (6, '44694944', 'SAMUEL', 'GONZALES', 'VASQUEZ', 1, 'MI CASA', NULL, NULL, '2019-03-30 13:08:07', 1, 2),
-(7, 'mesero2', 'CESAR DANIEL', 'ROSILLO', 'PINZON', 1, '', NULL, NULL, '2019-02-22 00:14:26', 0, 2);
+(7, 'mesero2', 'CESAR DANIEL', 'ROSILLO', 'PINZON', 1, '', NULL, NULL, '2019-02-22 00:14:26', 0, 2),
+(8, 'super', 'SUPER', 'SUPER', 'SUPER', 1, 'SIN DIRECCION', '0000000000', '0000000', '2022-09-06 08:35:40', 1, 2);
 
 -- --------------------------------------------------------
 
@@ -2880,7 +2881,8 @@ INSERT INTO `facturacion` (`id`, `id_pedido`, `id_tipo_comprobante`, `numero`, `
 (2717, 2770, '03', 1, 2680, '2019-08-23 04:27:49', '', '', '', 'Señor', '41.00', 41, 1, '0.00', '41.00', '', '', 0),
 (2718, 2769, '03', 1, 2681, '2019-08-23 04:44:22', '', '', '', 'Juan', '32.00', 32, 1, '0.00', '32.00', '', '', 0),
 (2719, 2850, '01', 1, 92, '2022-09-01 23:20:30', '20487594670', 'INVERSIONES MARDI E.I.R.L.', 'CAL. SACSAYHUAMAN CDRA. 1 NRO. S/N SECTOR PUEBLO LIBRE CAJAMARCA JAEN JAEN', 'eeeeeeeeeeeeeee', '6.00', 6, 1, '0.00', '6.00', '', 'ENSALADA CLASICA PERS.', 1),
-(2720, 2851, '03', 1, 2682, '2022-09-01 23:22:11', '46856259', 'ALDO GUIDO MOLOCHO DIAZ', '', 'ees', '22.00', 22, 1, '0.00', '22.00', '', 'ENSALADA CLASICA PERS.ENSALADA GRANDEENSALADA CLASICA PERS.', 111);
+(2720, 2851, '03', 1, 2682, '2022-09-01 23:22:11', '46856259', 'ALDO GUIDO MOLOCHO DIAZ', '', 'ees', '22.00', 22, 1, '0.00', '22.00', '', 'ENSALADA CLASICA PERS.ENSALADA GRANDEENSALADA CLASICA PERS.', 111),
+(2721, 2867, '03', 1, 2683, '2022-09-04 17:58:48', '46856259', 'ALDO GUIDO MOLOCHO DIAZ', '', 'uuuuuuuuuuuuu', '30.00', 30, 1, '0.00', '30.00', '', 'ENSALADA CLASICA PERS.ENSALADA CLASICA PERS.ENSALADA CLASICA PERS.', 5);
 
 -- --------------------------------------------------------
 
@@ -5520,14 +5522,14 @@ CREATE TABLE `mesa` (
 --
 
 INSERT INTO `mesa` (`id`, `numero`, `estado`, `estado_convencional`, `disponibilidad`) VALUES
-(1, 'Barra 1', 1, 1, 0),
-(2, 'Barra 2', 1, 1, 0),
+(1, 'Barra 1', 1, 2, 0),
+(2, 'Barra 2', 1, 2, 0),
 (3, 'Barra 3', 1, 2, 0),
 (4, 'Barra 4', 1, 2, 0),
 (5, 'Mesa 1', 1, 2, 0),
-(6, 'Mesa 2', 1, 1, 0),
-(7, 'Mesa 3', 1, 1, 0),
-(8, 'Mesa 4', 1, 1, 0),
+(6, 'Mesa 2', 1, 2, 0),
+(7, 'Mesa 3', 1, 2, 0),
+(8, 'Mesa 4', 1, 2, 0),
 (9, 'Mesa 5', 1, 1, 0),
 (10, 'Mesa 6', 1, 1, 0),
 (11, 'Banco 1', 1, 1, 0),
@@ -8379,7 +8381,7 @@ INSERT INTO `pedido` (`id`, `id_mesa`, `id_empleado`, `fecha_registro`, `estado`
 (2864, 6, 2, '2022-08-26 09:53:25', 2, 'aaa'),
 (2865, 3, 2, '2022-08-26 10:11:57', 2, 'aaaaaaaaaa'),
 (2866, 3, 2, '2022-08-26 10:25:11', 2, 'tttttttttttttttttttttttttt'),
-(2867, 3, 2, '2022-08-26 10:32:11', 1, 'uuuuuuuuuuuuu'),
+(2867, 3, 2, '2022-08-26 10:32:11', 2, 'uuuuuuuuuuuuu'),
 (2868, 6, 2, '2022-08-26 10:42:45', 2, 'eeeeeeeeeeeeeeeeeeeeeeeeeeeeee'),
 (2869, 5, 2, '2022-08-26 10:46:44', 2, 'aaaaaaaaaaaaaaaaaaa'),
 (2870, 6, 2, '2022-08-26 10:49:35', 2, 'eeeeeeeeeeeeeeeeeee'),
@@ -8431,7 +8433,16 @@ INSERT INTO `pedido` (`id`, `id_mesa`, `id_empleado`, `fecha_registro`, `estado`
 (2916, 7, 2, '2022-08-26 13:44:04', 2, 'sssssssssss'),
 (2917, 5, 2, '2022-08-26 14:27:08', 2, 'platos'),
 (2918, 6, 2, '2022-08-26 14:32:07', 2, 'PRUEBA'),
-(2919, 5, 2, '2022-09-01 12:28:44', 1, 'richard');
+(2919, 5, 2, '2022-09-01 12:28:44', 1, 'richard'),
+(2920, 10, 2, '2022-09-05 19:35:31', 2, 'TS'),
+(2921, 1, 2, '2022-09-06 09:36:33', 2, 'TEST2'),
+(2922, 1, 2, '2022-09-06 09:42:47', 1, 'test3'),
+(2923, 2, 2, '2022-09-06 09:54:48', 1, 'test2'),
+(2924, 3, 2, '2022-09-06 10:09:48', 1, 'tst232'),
+(2925, 6, 2, '2022-09-06 14:35:18', 3, 'ivan2'),
+(2926, 6, 2, '2022-09-06 16:28:54', 1, '9626'),
+(2927, 7, 2, '2022-09-06 17:13:50', 1, 'uuuu'),
+(2928, 8, 2, '2022-09-06 17:31:08', 1, 'mmmmm');
 
 -- --------------------------------------------------------
 
@@ -8607,7 +8618,7 @@ CREATE TABLE `serie_comprobante` (
 INSERT INTO `serie_comprobante` (`id`, `id_tipo_comprobante`, `numero`, `correlativo`, `estado`) VALUES
 (1, '01', 1, 93, 1),
 (2, '01', 2, 111, 1),
-(3, '03', 1, 2683, 1);
+(3, '03', 1, 2684, 1);
 
 -- --------------------------------------------------------
 
@@ -18264,9 +18275,9 @@ INSERT INTO `toma_pedido` (`id`, `id_pedido`, `id_producto`, `cantidad`, `precio
 (9547, 2866, 3, 1, '6.00', 4, NULL, NULL, NULL, 1, 0, NULL, '2022-08-26 15:25:11'),
 (9548, 2866, 4, 1, '10.00', 4, NULL, NULL, NULL, 2, 0, NULL, '2022-08-26 15:26:14'),
 (9549, 2866, 3, 1, '6.00', 4, NULL, NULL, NULL, 1, 0, NULL, '2022-08-26 15:26:53'),
-(9550, 2867, 3, 1, '6.00', 3, NULL, '01:53', NULL, 1, 0, NULL, '2022-08-26 15:32:11'),
-(9551, 2867, 3, 2, '6.00', 3, NULL, '01:55', NULL, 1, 0, NULL, '2022-08-26 15:32:29'),
-(9552, 2867, 3, 2, '6.00', 3, NULL, '01:56', NULL, 1, 0, NULL, '2022-08-26 15:33:59'),
+(9550, 2867, 3, 1, '6.00', 6, NULL, '01:53', NULL, 1, 0, 2721, '2022-08-26 15:32:11'),
+(9551, 2867, 3, 2, '6.00', 6, NULL, '01:55', NULL, 1, 0, 2721, '2022-08-26 15:32:29'),
+(9552, 2867, 3, 2, '6.00', 6, NULL, '01:56', NULL, 1, 0, 2721, '2022-08-26 15:33:59'),
 (9553, 2868, 51, 1, '10.00', 4, NULL, NULL, NULL, 3, 0, NULL, '2022-08-26 15:42:45'),
 (9554, 2863, 4, 1, '10.00', 4, NULL, NULL, NULL, 2, 0, NULL, '2022-08-26 15:44:51'),
 (9555, 2869, 3, 1, '6.00', 4, NULL, NULL, NULL, 1, 0, NULL, '2022-08-26 15:46:44'),
@@ -18336,7 +18347,21 @@ INSERT INTO `toma_pedido` (`id`, `id_pedido`, `id_producto`, `cantidad`, `precio
 (9618, 2918, 9, 1, '4.00', 4, NULL, NULL, NULL, 1, 0, NULL, '2022-08-26 19:32:07'),
 (9619, 2918, 3, 1, '6.00', 4, NULL, NULL, NULL, 1, 0, NULL, '2022-08-26 19:32:08'),
 (9620, 2919, 3, 1, '6.00', 3, NULL, '00:21', NULL, 1, 0, NULL, '2022-09-01 17:28:44'),
-(9621, 2919, 4, 1, '10.00', 3, NULL, '00:16', NULL, 2, 0, NULL, '2022-09-01 17:28:44');
+(9621, 2919, 4, 1, '10.00', 3, NULL, '00:16', NULL, 2, 0, NULL, '2022-09-01 17:28:44'),
+(9622, 2920, 1, 1, '8.00', 4, NULL, NULL, NULL, 1, 0, NULL, '2022-09-06 00:35:31'),
+(9623, 2921, 1, 1, '8.00', 4, NULL, NULL, NULL, 1, 0, NULL, '2022-09-06 14:36:33'),
+(9624, 2922, 1, 1, '8.00', 3, NULL, '10:40', NULL, 1, 0, NULL, '2022-09-06 14:42:47'),
+(9625, 2923, 1, 1, '8.00', 3, NULL, '09:30', NULL, 1, 0, NULL, '2022-09-06 14:54:48'),
+(9626, 2924, 1, 1, '8.00', 3, NULL, '00:05', NULL, 1, 0, NULL, '2022-09-06 15:09:48'),
+(9627, 2924, 11, 1, '15.00', 1, NULL, NULL, '', 2, 0, NULL, '2022-09-06 15:19:16'),
+(9628, 2924, 80, 1, '10.00', 3, NULL, '38:09', NULL, 9, 0, NULL, '2022-09-06 15:20:17'),
+(9629, 2924, 80, 1, '10.00', 4, NULL, NULL, NULL, 9, 0, NULL, '2022-09-06 15:28:59'),
+(9630, 2925, 44, 1, '3.00', 4, NULL, NULL, NULL, 1, 0, NULL, '2022-09-06 19:35:18'),
+(9631, 2926, 83, 1, '4.50', 3, NULL, NULL, NULL, 6, 0, NULL, '2022-09-06 21:28:54'),
+(9632, 2924, 44, 1, '3.00', 1, NULL, NULL, NULL, 1, 0, NULL, '2022-09-06 22:13:28'),
+(9633, 2924, 78, 3, '15.00', 1, NULL, NULL, NULL, 7, 0, NULL, '2022-09-06 22:13:37'),
+(9634, 2927, 44, 1, '3.00', 1, NULL, NULL, NULL, 1, 0, NULL, '2022-09-06 22:13:50'),
+(9635, 2928, 56, 1, '5.00', 1, NULL, NULL, NULL, 4, 0, NULL, '2022-09-06 22:31:08');
 
 -- --------------------------------------------------------
 
@@ -18362,7 +18387,8 @@ INSERT INTO `usuario` (`id`, `id_empleado`, `estado`, `clave`) VALUES
 (4, 4, 1, '202cb962ac59075b964b07152d234b70'),
 (5, 5, 1, '202cb962ac59075b964b07152d234b70'),
 (6, 6, 1, '202cb962ac59075b964b07152d234b70'),
-(7, 7, 0, '202cb962ac59075b964b07152d234b70');
+(7, 7, 0, '202cb962ac59075b964b07152d234b70'),
+(8, 8, 1, '202cb962ac59075b964b07152d234b70');
 
 -- --------------------------------------------------------
 
@@ -18551,7 +18577,7 @@ ALTER TABLE `categoria`
 -- AUTO_INCREMENT de la tabla `empleado`
 --
 ALTER TABLE `empleado`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `estado_proceso`
@@ -18563,7 +18589,7 @@ ALTER TABLE `estado_proceso`
 -- AUTO_INCREMENT de la tabla `facturacion`
 --
 ALTER TABLE `facturacion`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2721;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2722;
 
 --
 -- AUTO_INCREMENT de la tabla `log`
@@ -18581,7 +18607,7 @@ ALTER TABLE `mesa`
 -- AUTO_INCREMENT de la tabla `pedido`
 --
 ALTER TABLE `pedido`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2920;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2929;
 
 --
 -- AUTO_INCREMENT de la tabla `producto`
@@ -18623,13 +18649,13 @@ ALTER TABLE `tipo_servicio`
 -- AUTO_INCREMENT de la tabla `toma_pedido`
 --
 ALTER TABLE `toma_pedido`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9622;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9636;
 
 --
 -- AUTO_INCREMENT de la tabla `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `utensilio`
