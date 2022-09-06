@@ -828,6 +828,15 @@ function limpiar_entrega_unitaria(){
     DOM.operacion.val("");
     DOM.nombre_cliente.val("");
     listarPedidoEntrega(DOM.codigo_mesa.val());
+
+    setTimeout(function(){
+        if ( DOM.listado_pedido_entrega.find("tr").length <= 1 ) {
+            DOM.codigo_mesa.val("");
+            DOM.mesa.val("");
+            DOM.estado_convencional.val("");
+            bloque(1);
+        }  
+    }, 50);
 }
 
 function acciones_entrega(){
