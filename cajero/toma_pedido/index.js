@@ -322,7 +322,16 @@ function GuardarFacturacion(){
     }
     var producto = '';
     var cantidad = 0;
+    let detallePdo = [];
     $.each(DOM.listado_apagar.find("tr"),function(i,item){
+        let obj = {
+            "cantidad" : parseInt($(this).find("td").eq(2).html()),
+            "producto" : $(this).find("td").eq(1).find("h5").eq(0).html(),
+            "precio" : $(this).find("td").eq(3).html(),
+            "importe" : $(this).find("td").eq(4).html(),
+        }
+        detallePdo.push(obj);
+
         //var dataset = this.dataset.id;
         //if ( this.dataset.id !== undefined ) {
             producto += $(this).find("td").eq(1).find("h5").eq(0).html();
@@ -354,7 +363,10 @@ function GuardarFacturacion(){
             producto,
             cantidad,
             DOM.cantidad_puntos.val(),
-            json
+            json,
+            //EXTRA POR MIENTRA DESPUES ARREGLAR PRODUCTOS
+            JSON.stringify(detallePdo)
+
         ]
     }, funcion); 
 }
@@ -390,7 +402,7 @@ function setEventos(){
     });
     
     DOM.btnPagar.click(function(){
-        if ( DOM.tipo_comprobante.val() === "" )  {
+        /* if ( DOM.tipo_comprobante.val() === "" )  {
             Validar.alert("warning","Debe seleccionar un tipo de comprobante",2000);
             return 0;
         }
@@ -408,7 +420,7 @@ function setEventos(){
         if ( DOM.tipo_comprobante.val() === "01" && DOM.documento.val() === "" ) {
             Validar.alert("warning","Debe ingresar el número de factura",2000);
             return 0;
-        }
+        } */
 
         $("#confirmar_pago").modal("show");        
     });

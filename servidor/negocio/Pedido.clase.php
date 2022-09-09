@@ -1,6 +1,8 @@
 <?php
 
 require_once '../acceso/Conexion.clase.php';
+include_once 'util/GenerarTicket.php';
+
 
 class Pedido extends Conexion {
     private $id;
@@ -956,11 +958,13 @@ class Pedido extends Conexion {
             $producto,
             $cantidad_producto,
             $cantidad_puntos,
-            $json
+            $json,
+            //EXTRA
+            $toma_pedido
         ){
         $this->beginTransaction();
         try {
-            $sql = "SELECT id FROM pedido WHERE id_mesa = :0 AND estado = 1";
+            /* $sql = "SELECT id FROM pedido WHERE id_mesa = :0 AND estado = 1";
             $id_pedido = intval($this->consultarValor($sql,[$this->getId_mesa()]));
 
             $sql = "SELECT COUNT(*) FROM toma_pedido WHERE id_pedido = :0 AND estado = 3";// CONTAR FILAS
@@ -1038,7 +1042,7 @@ class Pedido extends Conexion {
                 $this->update("toma_pedido", $campos_valores,$campos_valores_where);
             }   
 
-            /*CORRELATIVO*/
+            //CORRELATIVO
             $campos_valores = [
                 "correlativo"=>$new_correlativo
             ];             
@@ -1048,7 +1052,7 @@ class Pedido extends Conexion {
             ];
             $this->update("serie_comprobante", $campos_valores,$campos_valores_where);
 
-            /*CAMBIAR PUNTOS*/
+            //CAMBIAR PUNTOS
             $sql = "SELECT id,puntos,estado_puntos FROM facturacion WHERE documento = :0 ORDER BY 1";
             $puntos = $this->consultarFilas($sql,[$documento]);
             
@@ -1078,8 +1082,38 @@ class Pedido extends Conexion {
                         $contar = 0;
                     }
                 }
-            }
+            } */
+            
+            $data["tipo"] = ($tipo == "03" ? "BOLETA" : "FACTURA")." ELECTRÓNICA";
+            $data["comprobante"] = ($tipo == "03" ? "B" : "F").$numero."-".$correlativo;
+            $data["toma_pedido"] = $toma_pedido;
+            $data["cliente"] = [
+                [
+                    "descripcion"=>"RUC/DNI",
+                    "texto"=>$documento
+                ],
+                [
+                    "descripcion"=>"CLIENTE",
+                    "texto"=>$cliente
+                ],
+                [
+                    "descripcion"=>"DIRECCIÓN",
+                    "texto"=>$direccion == "" ? "-" : $direccion
+                ],
+                [
+                    "descripcion"=>"F. EMISIÓN",
+                    "texto"=>date("d/m/Y")
+                ]   
+            ];
 
+            $ticket = new GenerarTicket();
+            $ticket->crearPDF($data);
+
+            
+            $this->commit();
+            return array("rpt"=>true,"msj"=>"Se ha finalizado el pedido");
+
+            
             /*LOG MOVIMIENTO*/
             /*$campos_valores = [
                 "id_mesa"=>$this->getId_mesa(),
@@ -1091,9 +1125,6 @@ class Pedido extends Conexion {
                 "new_correlativo"=>$new_correlativo
             ]; 
             $this->insert("log", $campos_valores);*/
-            
-            $this->commit();
-            return array("rpt"=>true,"msj"=>"Se ha finalizado el pedido");
         } catch (Exception $exc) {
             return array("rpt"=>false,"msj"=>$exc);
             $this->rollBack();

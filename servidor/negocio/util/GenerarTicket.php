@@ -1,0 +1,202 @@
+<?php
+    require_once 'fpdf.php';
+    //$ImagePath = dirname(__FILE__)."\logo.jpg";
+    //$pdf->Cell(10,10, $pdf->Image($ImagePath, $pdf->GetX(), $pdf->GetY(),30));
+    class GenerarTicket extends FPDF {
+        public function crearPDF($data){
+            
+            try {
+                
+                $jump = 8;
+                //
+                $pdf = new FPDF($orientation='P',$unit='mm', array(80,350)); 
+                $pdf->AddPage(); 
+                $pdf->Image(dirname(__FILE__)."\logo.jpg", 30, $pdf->GetY(),20);
+                $pdf->Ln(25); //SALTO
+                $pdf->SetFont('Arial','B',14);                
+                $pdf->Cell(0,$jump,utf8_decode("PERUANDINO CAFÉ"),0,0,'C');
+                $pdf->Ln(); //SALTO
+                $pdf->SetFont('Arial','B',10); 
+                $pdf->Cell(0,$jump,"RUC 20487859487",0,0,'C');
+                $pdf->Ln();
+                
+                $pdf->SetFont('Arial','',10); 
+                $pdf->Cell(0,$jump,"PRINCIPAL",0,0,'C');
+                $pdf->Ln(); //SALTO
+                $pdf->MultiCell(0,4,utf8_decode("AV. MARISCAL CASTILLA NRO. 1425 SEC. PUEBLO LIBRE - CAJAMARCA JAEN JAEN"),0,'C');
+                $pdf->Ln(); //SALTO
+                $pdf->Cell(0,4,"CEL: 939 418 140",0,0,'C');
+                $pdf->Ln(); //SALTO
+                $pdf->Cell(0,4,"Telf: 076 301840",0,0,'C');
+                $pdf->Ln(); //SALTO
+                $pdf->Cell(0,4,"Correo: cafeperuandino@gmail.com",0,0,'C');
+                $pdf->Ln(10); //SALTO
+                $pdf->Cell(0,4,utf8_decode($data["tipo"]),0,0,'C');
+                $pdf->Ln(); //SALTO
+                $pdf->Cell(0,$jump,$data["comprobante"],0,0,'C');
+                $pdf->Ln(); //SALTO
+                // DATA CLIENTE //
+                $this->TablaDataCliente($pdf,$data["cliente"]);
+                // DATA PRODUCTOS //                
+                $this->TablaDataProducto($pdf,$data["toma_pedido"]);
+
+            
+                /* $pdf->Cell(0,5,utf8_decode("PRODUCTOS"),0,0,'C');    
+                $pdf->Ln(); //SALTO
+                $pdf->Cell(0,5,"...........................................................................",0,0,'C');
+                $pdf->Ln(); //SALTO
+                $pdf->Cell(0,$jump,"EXONERADO S/ 135.00",0,0,'C');
+                $pdf->Ln(); //SALTO
+                $pdf->Cell(0,$jump,"I.G.V. 18% S/ 0.00",0,0,'C');
+                $pdf->Ln(); //SALTO
+                $pdf->Cell(0,$jump,"TOTAL S/ 135.00",0,0,'C');
+                $pdf->Ln(); //SALTO
+                $pdf->Cell(0,$jump,"...........................................................................",0,0,'C');
+                $pdf->Ln(); //SALTO
+                $pdf->Cell(0,$jump,"USUARIO CRISTIAN ROSILLO 31/08/2022 04:39 PM",0,0,'C');
+                $pdf->Ln(); //SALTO
+                $pdf->Cell(0,$jump,"OBSERV. BIENES TRANSFERIDOS EN LA AMAZONÍA REGIÓN SELVA PARA SER CONSUMIDOS EN LA MISMA",0,0,'C');
+                $pdf->Ln(); //SALTO
+                $pdf->Cell(0,$jump,"CONDICIÓN DE PAGO CONTADO",0,0,'C');
+                $pdf->Ln(); //SALTO
+                $pdf->Cell(0,$jump,"SON CIENTO TREINTA Y CINCO Y 00/100 SOLES",0,0,'C');
+                $pdf->Ln(); //SALTO
+                $pdf->Cell(0,$jump,"QR",0,0,'C');
+                $pdf->Ln(); //SALTO */
+
+
+                
+                $pdf->Output("../pdf/newpdf.pdf","F");
+            } catch (\Throwable $th) {
+                var_dump($th);
+                exit();
+            }
+            
+
+        }
+
+        public function TablaDataCliente($pdf,$cols){
+            foreach($cols as $col){                
+                $pdf->setX(5);
+                $pdf->SetFont('Arial','B',8); 
+                $pdf->Cell(20,6,utf8_decode($col["descripcion"]));
+                $pdf->setX(28);
+                $pdf->SetFont('Arial','',8);
+                $pdf->MultiCell(47,6,utf8_decode($col["texto"]));  
+            }
+            $pdf->Cell(0,5,"............................................................................................",0,0,'C');
+            $pdf->Ln();
+        }
+
+        public function TablaDataProducto($pdf,$cols){
+            $x = 2;
+            $widths = [33,13,15,15];
+            $headers = ["DESCRIPCIÓN","CANT","PRECIO","TOTAL"];
+
+            $pdf->SetFont('Arial','B',8);
+            $pdf->setX($x); 
+            foreach( $widths as $key=>$width ) {
+                $pdf->Cell($width,6,utf8_decode($headers[$key]),0,0, $key > 0 && "R");
+                $x += $width;
+                $pdf->setX($x);
+            }
+            $x = 2;
+            $pdf->Ln();
+
+
+            $pdf->SetFont('Arial','',8);
+            $products = json_decode($cols,true);
+
+            $nb = 0;
+            foreach( $products as $product ){
+                $pdf->setX($x);
+                $nb = max($nb,$this->NbLines($pdf,$widths[0],$product["producto"]));
+                $h = 5 * $nb;
+                foreach ($widths as $key=>$width) {
+                    $x1 = $pdf->GetX();
+                    $x2 = $pdf->GetY();
+                    switch ($key) {
+                        case 0:
+                            $pdf->MultiCell($width,5,$product["producto"],0);
+                            $x = $x1 + $width;
+                            $pdf->SetXY($x,$x2);
+                            break;
+                        case 1:
+                            $pdf->MultiCell($width,5,$product["cantidad"],0,"R");
+                            $x = $x1 + $width;
+                            $pdf->SetXY($x,$x2);
+                            break;
+                        case 2:
+                            $pdf->MultiCell($width,5,$product["precio"],0,"R");
+                            $x = $x1 + $width;
+                            $pdf->SetXY($x,$x2);
+                            break;
+                        case 3:
+                            $pdf->MultiCell($width,5,$product["importe"],0,"R");
+                            $x = $x1 + $width;
+                            $pdf->SetXY($x,$x2);
+                            break;
+                    }
+                }
+                $pdf->Ln($h);
+                $x = 2;
+            }        
+            $pdf->Cell(0,0,"............................................................................................",0,0,'C');            
+        }
+
+        public function NbLines($pdf,$w,$txt){
+            //Calcula el número de líneas que tomará una MultiCell de ancho w
+            $cw=&$pdf->CurrentFont['cw'];            
+            if($w==0)
+                $w=$pdf->w-$pdf->rMargin-$pdf->x;
+                
+            $wmax=($w-2*$pdf->cMargin)*1000/$pdf->FontSize;
+            
+            $s=str_replace("\r",'',$txt);
+            
+            $nb=strlen($s);
+            if($nb>0 and $s[$nb-1]=="\n")
+                $nb--;
+            $sep=-1;
+            $i=0;
+            $j=0;
+            $l=0;
+            $nl=1;
+            while($i<$nb)
+            {
+                $c=$s[$i];
+                if($c=="\n")
+                {
+                    $i++;
+                    $sep=-1;
+                    $j=$i;
+                    $l=0;
+                    $nl++;
+                    continue;
+                }
+                if($c==' ')
+                    $sep=$i;
+                $l+=$cw[$c];
+                if($l>$wmax)
+                {
+                    if($sep==-1)
+                    {
+                        if($i==$j)
+                            $i++;
+                    }
+                    else
+                        $i=$sep+1;
+                    $sep=-1;
+                    $j=$i;
+                    $l=0;
+                    $nl++;
+                }
+                else
+                    $i++;
+            }
+            return $nl;
+        }
+    }
+
+    
+?>
