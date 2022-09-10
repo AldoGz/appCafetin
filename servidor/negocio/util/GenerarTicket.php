@@ -39,18 +39,16 @@
                 $this->TablaDataCliente($pdf,$data["cliente"]);
                 // DATA PRODUCTOS //                
                 $this->TablaDataProducto($pdf,$data["toma_pedido"]);
-                $pdf->Ln(2);
+                
                 // DATA IMPORTE
                 $this->TablaImporte($pdf,$data["toma_pedido"]);
+                $pdf->Ln(5); //SALTO
+                $this->TablaDataPie($pdf);
 
-                $pdf->Ln(); //SALTO
-                $pdf->Cell(0,$jump,"USUARIO CRISTIAN ROSILLO 31/08/2022 04:39 PM",0,0,'C');
-                $pdf->Ln(); //SALTO
-                $pdf->Cell(0,$jump,"OBSERV. BIENES TRANSFERIDOS EN LA AMAZONÍA REGIÓN SELVA PARA SER CONSUMIDOS EN LA MISMA",0,0,'C');
-                $pdf->Ln(); //SALTO
-                $pdf->Cell(0,$jump,"CONDICIÓN DE PAGO CONTADO",0,0,'C');
-                $pdf->Ln(); //SALTO
-                $pdf->Cell(0,$jump,"SON CIENTO TREINTA Y CINCO Y 00/100 SOLES",0,0,'C');
+                $pdf->MultiCell(0,5,utf8_decode("Autorizado mediante resolución Resolución Nro. 0340050005929/SUNAT Representación impresa de la ". $data["tipo"]),0,'C');
+                $pdf->Ln();
+                $pdf->Cell(0,5,utf8_decode("MUCHAS GRACIAS POR SU COMPRA"),0,0,"C");
+
                 $pdf->Ln(); //SALTO
                 $pdf->Cell(0,$jump,"QR",0,0,'C');
                 $pdf->Ln(); //SALTO
@@ -134,6 +132,7 @@
                 $x = 5;
             }        
             $pdf->Cell(0,0,"............................................................................................",0,0,'C');            
+            $pdf->Ln(2);
         }
 
         public function NbLines($pdf,$w,$txt){
@@ -220,9 +219,36 @@
                 $pdf->Cell(50,6,utf8_decode($col["texto"]),0,0,"R");  
                 $pdf->Ln();               
             }
+            $pdf->setX(5);
+            $pdf->SetFont('Arial','',6); 
+            $pdf->Cell(0,6,utf8_decode("SON: CIENTO CINCUENTA Y DOS Y 10/100 SOLES"));
+            $pdf->Ln();
+            $pdf->SetFont('Arial','',8);
             $pdf->Cell(0,0,"............................................................................................",0,0,'C');            
         }
-    }
 
-    
+        public function TablaDataPie($pdf){
+            $cols = [
+                [
+                    "descripcion"=>"Vendedor",
+                    "texto" => "Cesar"
+                ],
+                [
+                    "descripcion"=>"Observación",
+                    "texto" => ""
+                ]
+            ];
+
+            foreach($cols as $col){                
+                $pdf->setX(5);
+                $pdf->SetFont('Arial','B',8); 
+                $pdf->Cell(20,6,utf8_decode($col["descripcion"]));
+                $pdf->setX(28);
+                $pdf->SetFont('Arial','',8);
+                $pdf->MultiCell(47,6,utf8_decode($col["texto"]));  
+            }
+            
+            $pdf->Ln();
+        }
+    }
 ?>
