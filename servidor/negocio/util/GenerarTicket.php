@@ -39,19 +39,10 @@
                 $this->TablaDataCliente($pdf,$data["cliente"]);
                 // DATA PRODUCTOS //                
                 $this->TablaDataProducto($pdf,$data["toma_pedido"]);
+                $pdf->Ln(2);
+                // DATA IMPORTE
+                $this->TablaImporte($pdf,$data["toma_pedido"]);
 
-            
-                /* $pdf->Cell(0,5,utf8_decode("PRODUCTOS"),0,0,'C');    
-                $pdf->Ln(); //SALTO
-                $pdf->Cell(0,5,"...........................................................................",0,0,'C');
-                $pdf->Ln(); //SALTO
-                $pdf->Cell(0,$jump,"EXONERADO S/ 135.00",0,0,'C');
-                $pdf->Ln(); //SALTO
-                $pdf->Cell(0,$jump,"I.G.V. 18% S/ 0.00",0,0,'C');
-                $pdf->Ln(); //SALTO
-                $pdf->Cell(0,$jump,"TOTAL S/ 135.00",0,0,'C');
-                $pdf->Ln(); //SALTO
-                $pdf->Cell(0,$jump,"...........................................................................",0,0,'C');
                 $pdf->Ln(); //SALTO
                 $pdf->Cell(0,$jump,"USUARIO CRISTIAN ROSILLO 31/08/2022 04:39 PM",0,0,'C');
                 $pdf->Ln(); //SALTO
@@ -62,7 +53,7 @@
                 $pdf->Cell(0,$jump,"SON CIENTO TREINTA Y CINCO Y 00/100 SOLES",0,0,'C');
                 $pdf->Ln(); //SALTO
                 $pdf->Cell(0,$jump,"QR",0,0,'C');
-                $pdf->Ln(); //SALTO */
+                $pdf->Ln(); //SALTO
 
 
                 
@@ -89,8 +80,8 @@
         }
 
         public function TablaDataProducto($pdf,$cols){
-            $x = 2;
-            $widths = [33,13,15,15];
+            $x = 5;
+            $widths = [28,10,16,16];
             $headers = ["DESCRIPCIÓN","CANT","PRECIO","TOTAL"];
 
             $pdf->SetFont('Arial','B',8);
@@ -100,16 +91,17 @@
                 $x += $width;
                 $pdf->setX($x);
             }
-            $x = 2;
+            $x = 5;
             $pdf->Ln();
 
 
             $pdf->SetFont('Arial','',8);
             $products = json_decode($cols,true);
 
-            $nb = 0;
+            
             foreach( $products as $product ){
                 $pdf->setX($x);
+                $nb = 0;
                 $nb = max($nb,$this->NbLines($pdf,$widths[0],$product["producto"]));
                 $h = 5 * $nb;
                 foreach ($widths as $key=>$width) {
@@ -139,7 +131,7 @@
                     }
                 }
                 $pdf->Ln($h);
-                $x = 2;
+                $x = 5;
             }        
             $pdf->Cell(0,0,"............................................................................................",0,0,'C');            
         }
@@ -195,6 +187,40 @@
                     $i++;
             }
             return $nl;
+        }
+
+        public function TablaImporte($pdf,$cols){
+            $total = 0;
+            $products = json_decode($cols,true);
+            foreach ($products as $product) {
+                $total += intval($product["importe"]);                
+            }
+
+            $cols = [
+                [
+                    "descripcion"=>"EXONERADO",
+                    "texto"=>number_format($total, 2)
+                ],
+                [
+                    "descripcion"=>"I.G.V. 18%",
+                    "texto"=>"0.00"
+                ],
+                [
+                    "descripcion"=>"TOTAL",
+                    "texto"=>number_format($total, 2)
+                ]
+            ];
+
+            foreach ($cols as $col) {
+                $pdf->setX(5);
+                $pdf->SetFont('Arial','B',8); 
+                $pdf->Cell(20,6,utf8_decode($col["descripcion"]));
+                $pdf->setX(25);
+                $pdf->SetFont('Arial','',8);
+                $pdf->Cell(50,6,utf8_decode($col["texto"]),0,0,"R");  
+                $pdf->Ln();               
+            }
+            $pdf->Cell(0,0,"............................................................................................",0,0,'C');            
         }
     }
 

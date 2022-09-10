@@ -327,8 +327,8 @@ function GuardarFacturacion(){
         let obj = {
             "cantidad" : parseInt($(this).find("td").eq(2).html()),
             "producto" : $(this).find("td").eq(1).find("h5").eq(0).html(),
-            "precio" : $(this).find("td").eq(3).html(),
-            "importe" : $(this).find("td").eq(4).html(),
+            "precio" : $(this).find("td").eq(3).html().split(" ")[1],
+            "importe" : $(this).find("td").eq(4).html().split(" ")[1],
         }
         detallePdo.push(obj);
 
