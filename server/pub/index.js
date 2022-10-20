@@ -50,11 +50,12 @@ function cargarMesas(){
     var funcion = function (resultado) {        
         if (resultado.estado === 200) {
             if (resultado.datos.rpt === true) {
+                console.log(resultado);
                 init(
                     DOM.listado_t2_mesas.find("div.tabla"),
-                    resultado.datos.msj.tabla,
+                    resultado.datos.msj.test,
                     DOM.listado_t2_mesas,
-                    resultado.datos.msj.detalle
+                    resultado.datos.msj.detalle2
                 );
                 timbre(resultado.datos.msj.timbre,1);
             }else{
@@ -119,7 +120,7 @@ function mesas(tabla,data,listado,detalle){
     if ( tabla.length < data.length ) {
         var html = '';
 
-        switch(tabla.length){
+        /* switch(tabla.length){
             case 0:
                 $.each(data, function(i,item){
                     var actual = new Date().getTime();
@@ -152,10 +153,25 @@ function mesas(tabla,data,listado,detalle){
                     }
                 });
                 break;
-        }
+        } */
+        $.each(data, function(i,item){
+            if ( tabla[i] === undefined ) {
+                /* var actual = new Date().getTime();
+                var inicio = new Date(item.fecha_registro).getTime();
+                var diff = new Date(actual-inicio);
+                
+                if ( diff.getUTCMinutes() >= 5 && diff.getUTCSeconds() >= 0 ) {
+                    anularToo(item.id_mesa);
+                    DOM.array.splice(detenerCronometro(item.id_mesa),1);  
+                }else{ */
+                    html += iniciarMesa(item,detalle);
+                    iniciarCronometro(item.id_mesa, item.fecha_registro);       
+                //}                         
+            }
+        });
         listado.append(html);        
     }
-    tomaPedido(tabla,detalle);
+    tomaPedido(tabla,data);
 }
 
 function iniciarMesa(item,detalle){    
@@ -167,21 +183,22 @@ function iniciarMesa(item,detalle){
                 html += '<div class="d-flex justify-content-between align-items-center" style="justify-content: center;">';
                     html += item.mesa;
                     html += '<h5 id="cronometro'+item.id_mesa+'">';
-                        html += '<span class="badge badge-success badge-pill">';
-                            html += '<min id="cron01-'+item.id_mesa+'">00:00</min>';                     
+                        html += '<span class="badge badge-success badge-pill">';                        
+                            html += '<min id="cron01-'+item.id_mesa+'">--:--</min>';                            
                         html += '</span>';
                     html += '</h5>';
                 html += '</div>';  
                 /*CABECERA*/
+
+
+
                 /*CUERPO*/
-                html += '<div id="detalle-pedido'+item.id_mesa+'">';
-                    $.each(detalle,function(key,value){
-                        if ( item.id_mesa == value.id_mesa ) {                                
-                            html += '<div class="btn btn-default btn-lg btn-block alert" role="alert" style="height: 68px;" onclick="cambiarEstado('+value.id+","+item.id_mesa+')">';                        
-                                html += '<h5 class="alert-heading" style="font: oblique bold 75% cursive;color: white;">'+value.cantidad+' '+value.producto+'</h5>';
-                                html += '<p style="font: oblique bold 45% cursive;color: white;">'+value.nota+ '</p>';
-                            html += '</div>'; 
-                        }                                 
+                html += '<div id="cdetalle-pedido'+item.id_mesa+'">';
+                    $.each(item.children,function(key,value){                        
+                        html += '<div class="btn btn-default btn-lg btn-block alert" role="alert" style="height: 68px;" onclick="cambiarEstado('+value.id+","+item.id_mesa+')">';
+                            html += '<p class="alert-heading" style="font: oblique bold 75% cursive;color: white;">'+value.cantidad+' '+value.producto+'</p>';
+                            html += '<p style="font: oblique bold 45% cursive;color: white;">'+value.nota+ '</p>';
+                        html += '</div>';                          
                     });
                 html += '</div>';  
                 /*CUERPO*/
@@ -194,19 +211,19 @@ function iniciarMesa(item,detalle){
     return html;
 }
 
-function tomaPedido(tabla,detalle){
+function tomaPedido(tabla,data){
     $.each(tabla,function(i,item){
         var html = '';
-        var referencia = this.dataset.id; 
-        $.each(detalle,function(key,value){
+        var referencia = this.dataset.id;
+        $.each(data[i].children,function(key,value){
             if ( referencia == value.id_mesa ) {                                
-                html += '<div class="btn btn-default btn-lg btn-block alert" role="alert" style="height: 68px;" onclick="cambiarEstado('+value.id+","+value.id_mesa+')">';                                        
+                html += '<div class="btn btn-default btn-lg btn-block alert" role="alert" style="height: 68px;color: white;" onclick="cambiarEstado('+value.id+","+value.id_mesa+')">';                     
                     html += '<h5 class="alert-heading" style="font: oblique bold 75% cursive;color: white;">'+value.cantidad+' '+value.producto+'</h5>';
                     html += '<p style="font: oblique bold 45% cursive;color: white;">'+value.nota+'</p>';
                 html += '</div>'; 
             }                                 
         });
-        $("#detalle-pedido"+referencia).html(html);        
+        $("#cdetalle-pedido"+referencia).html(html);        
     });
 }
 
@@ -235,11 +252,11 @@ function iniciarCronometro(id_mesa, fecha_registro){
         if ( diff.getUTCMinutes() >= 3 ) {
             $("#cronometro"+actividad)[0].children[0].classList.remove("badge-warning");
             $("#cronometro"+actividad)[0].children[0].classList.add("badge-danger");
-        } 
+        } /* 
         if ( diff.getUTCMinutes() >= 5 && diff.getUTCSeconds() >= 0 ) {
             anularToo(id_mesa);
             DOM.array.splice(detenerCronometro(id_mesa),1);  
-        }
+        } */
     }, 1000);     
     DOM.array.push({id_mesa:id_mesa,interval:tiempo_corriendo});
 }

@@ -68,10 +68,10 @@
             foreach($cols as $col){                
                 $pdf->setX(5);
                 $pdf->SetFont('Arial','B',8); 
-                $pdf->Cell(20,6,utf8_decode($col["descripcion"]));
-                $pdf->setX(28);
+                $pdf->Cell(25,6,utf8_decode($col["descripcion"]));
+                $pdf->setX(30);
                 $pdf->SetFont('Arial','',8);
-                $pdf->MultiCell(47,6,utf8_decode($col["texto"]));  
+                $pdf->MultiCell(45,6,utf8_decode($col["texto"]));  
             }
             $pdf->Cell(0,5,"............................................................................................",0,0,'C');
             $pdf->Ln();
@@ -213,10 +213,10 @@
             foreach ($cols as $col) {
                 $pdf->setX(5);
                 $pdf->SetFont('Arial','B',8); 
-                $pdf->Cell(20,6,utf8_decode($col["descripcion"]));
-                $pdf->setX(25);
+                $pdf->Cell(25,6,utf8_decode($col["descripcion"]));
+                $pdf->setX(30);
                 $pdf->SetFont('Arial','',8);
-                $pdf->Cell(50,6,utf8_decode($col["texto"]),0,0,"R");  
+                $pdf->Cell(45,6,utf8_decode($col["texto"]),0,0,"R");  
                 $pdf->Ln();               
             }
             $pdf->setX(5);
@@ -230,11 +230,11 @@
         public function TablaDataPie($pdf){
             $cols = [
                 [
-                    "descripcion"=>"Vendedor",
+                    "descripcion"=>"VENDEDOR",
                     "texto" => "Cesar"
                 ],
                 [
-                    "descripcion"=>"Observación",
+                    "descripcion"=>"OBSERVACIÓN",
                     "texto" => ""
                 ]
             ];
@@ -242,12 +242,11 @@
             foreach($cols as $col){                
                 $pdf->setX(5);
                 $pdf->SetFont('Arial','B',8); 
-                $pdf->Cell(20,6,utf8_decode($col["descripcion"]));
-                $pdf->setX(28);
+                $pdf->Cell(25,6,utf8_decode($col["descripcion"]));
+                $pdf->setX(30);
                 $pdf->SetFont('Arial','',8);
-                $pdf->MultiCell(47,6,utf8_decode($col["texto"]));  
+                $pdf->MultiCell(45,6,utf8_decode($col["texto"]));  
             }
-            
             $pdf->Ln();
         }
     }
