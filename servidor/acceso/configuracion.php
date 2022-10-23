@@ -4,4 +4,5 @@
 	define("USUARIO_BD", "root");
 	define("CLAVE_BD", "");
 	define("PUERTO_BD", "3306");
-	define("NOMBRE_BD", "db_cafetin");
+	//define("NOMBRE_BD", "db_cafetin");
+	define("NOMBRE_BD", "vacio");

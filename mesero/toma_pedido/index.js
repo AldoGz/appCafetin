@@ -965,80 +965,26 @@ function acciones_pedido(){
         return 0;
     }
 
-    var toma_pedido = []
-    $.each(DOM.modal_sub_producto.find("tbody"), function(i,item){
-        var self = $(this);        
-        switch(i){
-            case 0://empanadas
-                $.each(self.find("tr"), function(i, item){
-                    var self2 = $(this);
-                    if ( parseFloat(self2.find("th").eq(1).html().split(" ")[1]) > 0 ) {                        
-                        $.each(self2.find("td"), function(key, value){
-                            var self3 = $(this);                            
-                            var id_producto = parseInt(self3.find("input").eq(1).val());
-                            var cantidad = parseInt(self3.find("select").val());
-                            var precio = parseFloat(self3.find("input").eq(0).val());
-                            var item = parseInt(self2.find("th").eq(0).html().split(" ")[1]);
-                            if ( parseInt(self3.find("select").val()) > 0 ) {
-                                var obj = {
-                                    item : item,
-                                    id_producto, id_producto,
-                                    precio : precio,
-                                    cantidad : cantidad
-                                }
-                                toma_pedido.push(obj);  
-                            }
-                        });
-                    }
-                });                
-                break;                
-            case 1://sandwich
-                $.each(self.find("tr"), function(i, item){
-                    var self2 = $(this);
-                    if ( parseFloat(self2.find("th").eq(1).html().split(" ")[1]) > 0 ) {                        
-                        $.each(self2.find("td"), function(key, value){
-                            var self3 = $(this);                            
-                            var id_producto = parseInt(self3.find("input").eq(1).val());
-                            var cantidad = parseInt(self3.find("select").val());
-                            var precio = parseFloat(self3.find("input").eq(0).val());
-                            var item = parseInt(self2.find("th").eq(0).html().split(" ")[1]);
-                            if ( parseInt(self3.find("select").val()) > 0 ) {
-                                var obj = {
-                                    item : item,
-                                    id_producto, id_producto,
-                                    precio : precio,
-                                    cantidad : cantidad
-                                }
-                                toma_pedido.push(obj);  
-                            }
-                        });
-                    }
-                }); 
-                break;
-        }
-    });
-
+    var toma_pedido = [];
     $.each(DOM.listado_cocina.find("div.card"), function(i,item){
         var self = $(this);
-        if ( i > 1 ) {
-            $.each(self.find("select"), function(key,value){
-                var self2 = $(this);
-                var nodo = this.parentElement;
-                var id_producto = parseInt($(nodo).find("input").eq(1).val());
-                var cantidad = parseInt(self2.val());
-                var precio = parseFloat($(nodo).find("input").eq(0).val());
-                var item = key + 1;                
-                if ( parseInt(self2.val()) > 0 ) {
-                    var obj = {
-                        item : item,
-                        id_producto: id_producto,
-                        precio : precio,
-                        cantidad : cantidad
-                    }
-                    toma_pedido.push(obj); 
+        $.each(self.find("select"), function(key,value){
+            var self2 = $(this);
+            var nodo = this.parentElement;
+            var id_producto = parseInt($(nodo).find("input").eq(1).val());
+            var cantidad = parseInt(self2.val());
+            var precio = parseFloat($(nodo).find("input").eq(0).val());
+            var item = key + 1;                
+            if ( parseInt(self2.val()) > 0 ) {
+                var obj = {
+                    item : item,
+                    id_producto: id_producto,
+                    precio : precio,
+                    cantidad : cantidad
                 }
-            });
-        }
+                toma_pedido.push(obj); 
+            }
+        });
     });
 
     $.each(DOM.listado_bar.find("div.card"), function(i,item){
@@ -1065,8 +1011,10 @@ function acciones_pedido(){
     var json = JSON.stringify(toma_pedido);
     var json2 = JSON.stringify(DOM.array);
 
-    console.log(json);
-
+    if( toma_pedido.length == 0 ){
+        Validar.alert("warning","Debe tener al menos un pedido para guardar.",2000);
+        return 0;
+    }
     var funcion = function (resultado) {        
         if (resultado.estado === 200) {
             if (resultado.datos.rpt === true) {                    
