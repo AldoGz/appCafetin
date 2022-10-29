@@ -964,7 +964,7 @@ class Pedido extends Conexion {
         ){
         $this->beginTransaction();
         try {
-            /* $sql = "SELECT id FROM pedido WHERE id_mesa = :0 AND estado = 1";
+            $sql = "SELECT id FROM pedido WHERE id_mesa = :0 AND estado = 1";
             $id_pedido = intval($this->consultarValor($sql,[$this->getId_mesa()]));
 
             $sql = "SELECT COUNT(*) FROM toma_pedido WHERE id_pedido = :0 AND estado = 3";// CONTAR FILAS
@@ -1082,9 +1082,9 @@ class Pedido extends Conexion {
                         $contar = 0;
                     }
                 }
-            } */
+            }
             
-            $data["tipo"] = ($tipo == "03" ? "BOLETA" : "FACTURA")." ELECTRÓNICA";
+            /* $data["tipo"] = ($tipo == "03" ? "BOLETA" : "FACTURA")." ELECTRÓNICA";
             $data["comprobante"] = ($tipo == "03" ? "B" : "F").$numero."-".$correlativo;
             $data["toma_pedido"] = $toma_pedido;
             $data["cliente"] = [
@@ -1107,7 +1107,7 @@ class Pedido extends Conexion {
             ];
 
             $ticket = new GenerarTicket();
-            $ticket->crearPDF($data);
+            $ticket->crearPDF($data); */
 
             
             $this->commit();

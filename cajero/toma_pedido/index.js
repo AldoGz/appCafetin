@@ -342,32 +342,34 @@ function GuardarFacturacion(){
 
     var json = JSON.stringify(DOM.array);
 
+    const data_out = [
+        DOM.tipo_comprobante.val(),
+        DOM.serie_comprobante.val(),
+        parseInt(DOM.correlativo.val()), 
+        DOM.documento.val(),
+        DOM.razon_social.val(),
+        DOM.direccion.val(),
+        DOM.usuario.val(),
+        DOM.monto.val().split(" ")[1],
+        DOM.monto_descuento.val().split(" ")[1],
+        DOM.monto_amortizacion.val().split(" ")[1],
+        DOM.ticket.val(),
+        producto,
+        cantidad,
+        DOM.cantidad_puntos.val(),
+        json,
+        //EXTRA POR MIENTRA DESPUES ARREGLAR PRODUCTOS
+        JSON.stringify(detallePdo)
+
+    ];
+
     new Ajxur.Api({
         modelo: "Pedido",
         metodo: "realizarPago",
         data_in : {
             p_id_mesa : DOM.codigo_mesa.val()
         },
-        data_out : [
-            DOM.tipo_comprobante.val(),
-            DOM.serie_comprobante.val(),
-            parseInt(DOM.correlativo.val()), 
-            DOM.documento.val(),
-            DOM.razon_social.val(),
-            DOM.direccion.val(),
-            DOM.usuario.val(),
-            DOM.monto.val().split(" ")[1],
-            DOM.monto_descuento.val().split(" ")[1],
-            DOM.monto_amortizacion.val().split(" ")[1],
-            DOM.ticket.val(),
-            producto,
-            cantidad,
-            DOM.cantidad_puntos.val(),
-            json,
-            //EXTRA POR MIENTRA DESPUES ARREGLAR PRODUCTOS
-            JSON.stringify(detallePdo)
-
-        ]
+        data_out : data_out
     }, funcion); 
 }
 
@@ -402,7 +404,7 @@ function setEventos(){
     });
     
     DOM.btnPagar.click(function(){
-        /* if ( DOM.tipo_comprobante.val() === "" )  {
+        if ( DOM.tipo_comprobante.val() === "" )  {
             Validar.alert("warning","Debe seleccionar un tipo de comprobante",2000);
             return 0;
         }
@@ -420,7 +422,7 @@ function setEventos(){
         if ( DOM.tipo_comprobante.val() === "01" && DOM.documento.val() === "" ) {
             Validar.alert("warning","Debe ingresar el número de factura",2000);
             return 0;
-        } */
+        }
 
         $("#confirmar_pago").modal("show");        
     });
