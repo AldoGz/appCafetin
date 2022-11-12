@@ -159,6 +159,7 @@ function abrirFacturacion(id_mesa,mesa){
                         html += '</td>';
                         html += '<td class="text-center">'+item.cantidad+'</td>';
                         html += '<td class="text-center">S/. '+item.precio+'</td>';
+                        html += '<td class="text-center">S/. '+item.descuento+'</td>';
                         
                         html += '<td class="text-center">S/. '+item.importe+'</td>';
                     html += '</tr>';  
@@ -187,7 +188,7 @@ function abrirFacturacion(id_mesa,mesa){
 function montoTotal(){
     var importe = 0;
     $.each(DOM.listado_apagar.find("tr"), function(i, item){
-        importe += parseFloat($(this).find("td").eq(4).html().split(" ")[1]);        
+        importe += parseFloat($(this).find("td").eq(5).html().split(" ")[1]);        
     });
     return importe;
 }
@@ -328,7 +329,8 @@ function GuardarFacturacion(){
             "cantidad" : parseInt($(this).find("td").eq(2).html()),
             "producto" : $(this).find("td").eq(1).find("h5").eq(0).html(),
             "precio" : $(this).find("td").eq(3).html().split(" ")[1],
-            "importe" : $(this).find("td").eq(4).html().split(" ")[1],
+            "descuento" : $(this).find("td").eq(4).html().split(" ")[1],
+            "importe" : $(this).find("td").eq(5).html().split(" ")[1],
         }
         detallePdo.push(obj);
 
@@ -386,11 +388,12 @@ function setEventos(){
         DOM.array.splice(0,DOM.array.length);
         var nodo = this.parentElement.parentElement.parentElement;
         var total = 0;
+
         $.each($(nodo).find("tr"), function(i,item){
             var input = $(this).find("td").eq(0);           
 
             if ( input.find("input")[0].checked ) {
-                total += parseFloat($(this).find("td").eq(4).html().split(" ")[1]);
+                total += parseFloat($(this).find("td").eq(5).html().split(" ")[1]);
                 DOM.array.push(input.find("input")[0].value);
             }            
         });
@@ -731,19 +734,17 @@ function agregarDescuento(){
     DOM.monto_amortizacion.val("S/. "+parseFloat(nuevo_amortizacion).toFixed(2));
     DOM.ticket.prop("disabled", true);
     DOM.btnDescuento.prop("disabled",true);
-    var html = '';
-    html += '<tr>';
-        html += '<td class="text-center">';
-            html += '<div class="d-flex w-100 justify-content-between">';
-                html += '<h5>DESCUENTO '+DOM.text_descuento.val().split(" ")[0]+' %</h5>';                                
-                html += '<small></small>';
-            html += '</div>';
-        html += '</td>';
-        html += '<td class="text-center">-</td>';
-        html += '<td class="text-center">-</td>';        
-        html += '<td class="text-center" style="color:red;">(S/. '+parseFloat(monto_descuento).toFixed(2)+')</td>';
-    html += '</tr>';                    
-    DOM.listado_apagar.append(html);
+
+    $.each( DOM.listado_apagar.find("tr"), function(key, value){
+        $cantidad = parseInt($(this).find("td").eq(2).html());
+        $precio = parseFloat($(this).find("td").eq(3).html().split(" ")[1]);
+        $subtotal = $cantidad*$precio;        
+        $importe = parseFloat($subtotal-($subtotal*parseFloat(DOM.text_descuento.val().split(" ")[0])/100)).toFixed(2);
+        $descuento = parseFloat($subtotal - $importe).toFixed(2);
+
+        $(this).find("td").eq(4).html(`S/. ${$descuento}`);
+        $(this).find("td").eq(5).html(`S/. ${$importe}`);
+    });
 }
 
 function abrirDetalle(id_pedido){

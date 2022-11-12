@@ -591,6 +591,7 @@ class Pedido extends Conexion {
                         tp.cantidad,
                         tp.precio,
                         tp.cantidad*tp.precio as importe,
+                        tp.descuento as descuento,
                         IF(tp.nota IS NULL,'',tp.nota) as nota,
                         tp.estado
                     FROM pedido pe
@@ -960,7 +961,7 @@ class Pedido extends Conexion {
             $cantidad_puntos,
             $json,
             //EXTRA
-            $toma_pedido
+            $tomo
         ){
         $this->beginTransaction();
         try {
@@ -970,9 +971,21 @@ class Pedido extends Conexion {
             $sql = "SELECT COUNT(*) FROM toma_pedido WHERE id_pedido = :0 AND estado = 3";// CONTAR FILAS
             $resultado = intval($this->consultarValor($sql,[$id_pedido]));
             $toma_pedido = json_decode($json); /// ESTO NUMERO 
+
+            $json_tomo = json_decode($tomo); // DESCUENTO 
+
+            foreach ($toma_pedido as $key => $value) {
+                $campos_valores = [
+                    "descuento"=>$json_tomo[$key]->descuento
+                ];             
+                $campos_valores_where = ["id"=>$value];
+                $this->update("toma_pedido", $campos_valores,$campos_valores_where); 
+            }
             
             if ( count($toma_pedido) == $resultado ) {
-                $campos_valores = ["estado"=>2];             
+                $campos_valores = [
+                    "estado"=>2
+                ];             
                 $campos_valores_where = ["id"=>$id_pedido];
                 $this->update("pedido", $campos_valores,$campos_valores_where);   
 

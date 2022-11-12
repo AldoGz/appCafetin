@@ -147,7 +147,8 @@
                                                 <th class="text-center" scope="col"></th>
                                                 <th class="text-center" scope="col">PEDIDO</th>
                                                 <th class="text-center" scope="col">CANTIDAD</th>
-                                                <th class="text-center" scope="col">PRECIO</th>                                            
+                                                <th class="text-center" scope="col">PRECIO</th> 
+                                                <th class="text-center" scope="col">DESCUENTO</th>                                            
                                                 <th class="text-center" scope="col">IMPORTE</th>
                                             </tr>
                                         </thead>
@@ -265,7 +266,7 @@
                                     <tr>
                                         <th class="text-center" scope="col">PEDIDO</th>
                                         <th class="text-center" scope="col">PRECIO</th>
-                                        <th class="text-center" scope="col">CANTIDAD</th>
+                                        <th class="text-center" scope="col">CANTIDAD</th>                                        
                                         <th class="text-center" scope="col">IMPORTE</th>
                                     </tr>
                                 </thead>
