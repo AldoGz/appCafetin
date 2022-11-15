@@ -965,6 +965,7 @@ function acciones_pedido(){
         return 0;
     }
 
+    $("#btn-confirmar-accion").attr("disabled","true");
     var toma_pedido = [];
     $.each(DOM.listado_cocina.find("div.card"), function(i,item){
         var self = $(this);
@@ -1019,12 +1020,14 @@ function acciones_pedido(){
         if (resultado.estado === 200) {
             if (resultado.datos.rpt === true) {                    
                 limpiar_pedido();                
-                Validar.alert('warning',resultado.datos.msj,2000);                                            
+                Validar.alert('warning',resultado.datos.msj,2000);
+                $("#btn-confirmar-accion").removeAttr("disabled");
             }else{
                 Validar.alert("warning",resultado.datos.msj.errorInfo[2],2000);
             }            
         }
     }
+    
     new Ajxur.Api({
         modelo: "Pedido",
         metodo: "agregar",

@@ -72,6 +72,8 @@ function setDOM(){
     DOM.texto_usuario_detalle = $("#texto-usuario");
 
     DOM.array = [];
+
+    DOM.ticket_flag = false;
 }
 
 function bloque(tipo){
@@ -431,40 +433,35 @@ function setEventos(){
     });
 
     DOM.ticket.keyup(function(e){
-        
-        if ( DOM.ticket.val().length > 9) {
-            var funcion = function (resultado) {        
-                if (resultado.estado === 200) {
-                    if (resultado.datos.rpt === true) { 
-                                          
-                        var datos = resultado.datos.msj;
-                        if ( datos === false ) {
-                            Validar.alert("warning","No se encontrado esta promoción actualmente",2000);
-                            return 0;
-                        };
-                        if ( datos.porcentaje === undefined ) {
-                            DOM.text_descuento.val("");
-                            return 0;
-                        }else{
-                            $("#cargando").modal('show'); 
-                            setTimeout(function(){ 
-                                DOM.text_descuento.val(datos.porcentaje+" %");
-                                $("#cargando").modal('hide');    
-                            }, 2000);  
-                        }                                          
+        var funcion = function (resultado) {        
+            if (resultado.estado === 200) {
+                if (resultado.datos.rpt === true) { 
+                                        
+                    var datos = resultado.datos.msj;
+                    if ( datos === false ) return 0;
+                    
+                    if ( datos.porcentaje === undefined ) {
+                        DOM.text_descuento.val("");
+                        return 0;
                     }else{
-                        Validar.alert("warning",resultado.datos.msj.errorInfo[2],2000);
-                    }            
-                }
+                        $("#cargando").modal('show'); 
+                        setTimeout(function(){ 
+                            DOM.text_descuento.val(datos.porcentaje+" %");
+                            $("#cargando").modal('hide');    
+                        }, 2000);  
+                    }                                          
+                }else{
+                    Validar.alert("warning",resultado.datos.msj.errorInfo[2],2000);
+                }            
             }
-            new Ajxur.Api({
-                modelo: "PB",
-                metodo: "buscarTicket",
-                data_in : {
-                    p_ticket : DOM.ticket.val()
-                }
-            }, funcion);  
         }
+        new Ajxur.Api({
+            modelo: "PB",
+            metodo: "buscarTicket",
+            data_in : {
+                p_ticket : DOM.ticket.val()
+            }
+        }, funcion);
     });
 
     DOM.documento.keyup(function(e){
@@ -583,6 +580,7 @@ function setEventos(){
                 DOM.documento.val("");
                 DOM.razon_social.val("");
                 DOM.direccion.val("");
+                DOM.ticket.prop("disabled",false);
                 break;
             case "01":
                 $("#blkDireccion").show();
@@ -721,7 +719,7 @@ function setEventos(){
 }
 
 function agregarDescuento(){
-    if ( DOM.text_descuento.val() === "" ) {
+    if ( DOM.text_descuento.val() === "" ) {        
         Validar.alert("warning","No tiene ningún descuento",2000);
         return 0;
     }

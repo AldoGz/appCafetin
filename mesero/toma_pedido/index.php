@@ -408,7 +408,7 @@
                                 </div>
                                 <div class="row justify-content-center">
                                     <div class="col-3">
-                                        <button type="button" class="btn btn-success btn-block" onclick="confirmar_accion()">Si</button>
+                                        <button type="button" class="btn btn-success btn-block" onclick="confirmar_accion()" id="btn-confirmar-accion">Si</button>
                                     </div>
                                     <div class="col-3">
                                          <button type="button" class="btn btn-danger btn-block" class="close" data-dismiss="modal" aria-label="Close">No</button>
