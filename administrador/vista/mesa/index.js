@@ -2,11 +2,13 @@ var DOM = {};
 $(document).ready(function () {
     setDOM();
     setEventos();
+    cargarUbicacion();
     listar();
 });
 function setDOM() {
     DOM.p_codigo_mesa = $("#intCodigoMesa"),
 	DOM.p_numero_mesa = $("#strNumero"),
+    DOM.p_ubicacion = $("#intUbicacion"),
 
 	DOM.self = $("#myModal"),
 	DOM.btnAgregar = $("#btnAgregar"),
@@ -138,6 +140,7 @@ function leerDatos(codigo_categoria){
                 var datos = resultado.datos.msj;
                 DOM.p_codigo_mesa.val(datos.id);               
                 DOM.p_numero_mesa.val(datos.numero);
+                DOM.p_ubicacion.val(datos.ubicacion).selectpicker('refresh');
 
                 $("#XNumero").find(".form-line").addClass('focused');              
             }else{
@@ -174,5 +177,29 @@ function darBaja(codigo_categoria,estado){
             p_id : codigo_categoria,
             p_estado : estado
         }
+    }, funcion);
+}
+
+function cargarUbicacion(){
+    var funcion = function (resultado) {        
+        if (resultado.estado === 200) {
+            if (resultado.datos.rpt === true) {
+                var html = "";
+                html = '<option value="" disabled selected>Seleccionar Ubicación</option>';
+                $.each(resultado.datos.msj, function (i, item) { 
+                    if (i!=0){
+                    html += '<option value="' + item.id + '">'+ item.descripcion + '</option>';
+                    }
+                });
+                DOM.p_ubicacion.html(html).selectpicker('refresh');
+            }else{
+                Validar.alert("warning",resultado.datos.msj.errorInfo[2],2000); 
+            }            
+        }
+    };
+
+    new Ajxur.Api({
+        modelo: "Ubicaciones",
+        metodo: "llenarCB"
     }, funcion);
 }

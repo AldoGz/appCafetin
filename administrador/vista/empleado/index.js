@@ -4,6 +4,7 @@ $(document).ready(function () {
     setEventos();    
     cargarTipoEmpleadoCB();
     cargarTipoEmpleado();
+    cargarUbicacion();
     $('input[name="intSexo"][value="1"]').prop('checked', true);
     setTimeout(function(){ 
         listar(); 
@@ -19,6 +20,7 @@ function setDOM() {
     DOM.p_telefono_uno = $("#strTelefono1"),
     DOM.p_telefono_dos = $("#strTelefono2"),    
     DOM.p_codigo_tipo_empleado = $("#intCodigoTipoEmpleado"),
+    DOM.p_ubicacion = $("#intUbicacion"),
 
 	DOM.self = $("#myModal"),
 	DOM.btnAgregar = $("#btnAgregar"),
@@ -47,6 +49,7 @@ function limpiar(){
     $("#XTelefono2").find(".form-line").removeClass('focused');
     $('input[name="intSexo"][value="1"]').prop('checked', true);
     DOM.p_codigo_tipo_empleado.val("").selectpicker('refresh');
+    DOM.p_ubicacion.val("").selectpicker('refresh');
 }
 
 function validar(){
@@ -114,6 +117,11 @@ function setEventos() {
             return 0;
         }
 
+        if ( DOM.p_ubicacion.val() === '' ) {
+            alert("Debe ingresar una ubicación para el empleado");
+            return 0;
+        }
+
         var valor;
 
         for (var i = 0; i < $('input[name="intSexo"]').length; i++) {
@@ -149,7 +157,8 @@ function setEventos() {
                 p_tele_uno : DOM.p_telefono_uno.val(),
                 p_tele_dos : DOM.p_telefono_dos.val(),
                 p_sexo : valor,
-                p_id_tipo_empleado : DOM.p_codigo_tipo_empleado.val()
+                p_id_tipo_empleado : DOM.p_codigo_tipo_empleado.val(),
+                p_ubicacion : DOM.p_ubicacion.val()
             }
         }, funcion);
     });
@@ -246,10 +255,8 @@ function leerDatos(codigo_categoria){
                 DOM.p_telefono_dos.val(datos.tele_dos);
                 $('input[name="intSexo"][value="' + datos.sexo + '"]').prop('checked', true);
                 DOM.p_codigo_tipo_empleado.val(datos.id_tipo_empleado).selectpicker('refresh');
-
-                
-                
-
+                DOM.p_ubicacion.val(datos.ubicacion).selectpicker('refresh');
+                                
                 $("#XDocumento").find(".form-line").addClass('focused');              
                 $("#XNombresCompletos").find(".form-line").addClass('focused');
                 $("#XPaterno").find(".form-line").addClass('focused');
@@ -296,6 +303,8 @@ function darBaja(codigo_categoria,estado){
     }, funcion);
 }
 
+
+
 function cargarTipoEmpleado(){
     var funcion = function (resultado) {        
         if (resultado.estado === 200) {
@@ -339,4 +348,27 @@ function cargarTipoEmpleadoCB(){
         modelo: "TipoEmpleado",
         metodo: "llenarCB"
     }, funcion);
-}   
+}
+
+function cargarUbicacion(){
+    var funcion = function (resultado) {        
+        if (resultado.estado === 200) {
+            if (resultado.datos.rpt === true) {
+                var html = "";
+                html = '<option value="" disabled selected>Seleccionar Ubicación</option>';
+                               
+                $.each(resultado.datos.msj, function (i, item) { 
+                    html += '<option value="' + item.id + '">'+ item.descripcion + '</option>';
+                });
+                DOM.p_ubicacion.html(html).selectpicker('refresh');
+            }else{
+                Validar.alert("warning",resultado.datos.msj.errorInfo[2],2000); 
+            }            
+        }
+    };
+
+    new Ajxur.Api({
+        modelo: "Ubicaciones",
+        metodo: "llenarCB"
+    }, funcion);
+}

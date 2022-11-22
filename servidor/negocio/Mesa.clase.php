@@ -8,6 +8,7 @@ class Mesa extends Conexion {
     private $estado;
     private $estado_convercional;
     private $disponibilidad;
+    private $ubicacion;
 
     public function getId(){
         return $this->id;
@@ -51,6 +52,14 @@ class Mesa extends Conexion {
     
     public function setDisponibilidad($disponibilidad){
         $this->disponibilidad = $disponibilidad;
+        return $this;
+    }
+    public function getUbicacion(){
+        return $this->ubicacion;
+    }
+    
+    public function setUbicacion($ubicacion){
+        $this->ubicacion = $ubicacion;
         return $this;
     }
 
@@ -158,6 +167,20 @@ class Mesa extends Conexion {
         }
     }
 
+    public function llenarCBVacias() {
+        try {
+            $sql = "SELECT 
+                        me.*
+                    FROM mesa me
+                    WHERE me.estado = 1 and me.estado_convencional=1 and me.disponibilidad=0";
+            $resultado = $this->consultarFilas($sql);
+            return array("rpt"=>true,"msj"=>$resultado);
+        } catch (Exception $exc) {
+            return array("rpt"=>false,"msj"=>$exc);
+            throw $exc;
+        }
+    }
+
     public function llenarCBP() {
         try {
             $sql = "SELECT 
@@ -200,6 +223,36 @@ class Mesa extends Conexion {
             $campos_valores = ["disponibilidad"=>$this->getDisponibilidad()]; 
             $campos_valores_where = ["id"=>$this->getId()];
             $this->update("mesa", $campos_valores,$campos_valores_where);
+            $this->commit();
+            return array("rpt"=>true,"msj"=>"Se actualizado exitosamente");
+        } catch (Exception $exc) {
+            return array("rpt"=>false,"msj"=>$exc);
+            $this->rollBack();
+            throw $exc;
+        }
+    }
+
+    public function moverMesa($origen,$destino){
+        $this->beginTransaction();
+        try {
+            //BUSCAR EL PEDIDO DE LA MESA ACTUAL
+            $sql = "SELECT id FROM pedido WHERE id_mesa = :0 AND estado = 1";
+            $id_pedido = intval($this->consultarValor($sql,[$origen])); 
+            
+            //MOVER PEDIDO DE LA MESA
+            $campos_valores = ["id_mesa"=>$destino]; 
+            $campos_valores_where = ["id"=>$id_pedido];
+            $this->update("pedido", $campos_valores,$campos_valores_where);
+
+            //ACTUALIZAR MESAS
+            $campos_valores = ["estado_convencional"=>1]; 
+            $campos_valores_where = ["id"=>$origen];
+            $this->update("mesa", $campos_valores,$campos_valores_where);
+
+            $campos_valores = ["estado_convencional"=>2]; 
+            $campos_valores_where = ["id"=>$destino];
+            $this->update("mesa", $campos_valores,$campos_valores_where);
+
             $this->commit();
             return array("rpt"=>true,"msj"=>"Se actualizado exitosamente");
         } catch (Exception $exc) {

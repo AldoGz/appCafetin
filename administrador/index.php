@@ -1,3 +1,3 @@
 <?php
-header("location:vista/categoria");
+header("location:vista/reportes");
 ?>

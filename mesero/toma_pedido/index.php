@@ -175,6 +175,60 @@
                     </div>
                 </div>
 
+                <!-- MODAL OTRAS ACCIONES -->    
+                <div class="card" style="height:100%;" id="blkOtrasAcciones">
+                    <div class="card-header">
+                        <div class="row">
+                            <div class="col-md-11">
+                                <h5 class="titulo">CONSULTAR DETALLE DE MESA</h5> 
+                            </div>
+                            <div class="col-md-1">
+                                <button type="button" class="btn btn-danger btn-block" onclick="cerrarOtrasAcciones()"><i class="fas fa-times"></i></button>                                                             
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">                     
+                        <div class="row">
+                            <div class="col-md-2">
+                                <label for="texto_documento">Seleccione la mesa</label>                                
+                            </div>
+                            <div class="col-md-3">
+                                <select class="form-control" id="mesas_consultar" style="text-align-last:center;"></select>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="button" class="btn btn-success btn-block btn-xs" onclick="consultar_mesa()"><i class="fas fa-search"></i> Consultar</button>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="button" class="btn btn-link btn-block" style="text-decoration:none;background:#881420;color:white;" data-toggle="modal" data-target="#blkcambiar_mesa"><i class="fas fa-external-link-alt"></i>MOVER</button>
+                            </div>
+                            <div class="col-md-3">
+                                <h4 id="importe_espera_mozo" style="text-align-last:right; color:red"></h4>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="card-body" style="height:500px;overflow-x:hidden;overflow-y:scroll;white-space:nowrap">                        
+                                <div class="col-md-12">
+                                    <table class="table table-stripe">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-center">*</th>
+                                                <th class="text-center">Producto</th>
+                                                <th class="text-center">Cantidad</th>
+                                                <th class="text-center">Precio</th>
+                                                <th class="text-center">Importe</th>
+                                                
+                                            </tr>
+                                        </thead>
+                                        <tbody id="listado_pedido_mozo"></tbody>
+                                    </table>                            
+                                </div>                                              
+                            </div>                            
+                        </div>                                               
+                    </div>
+                </div>
+                <!-- MODAL OTRAS ACCIONES -->
+
+                <!-- MODAL PUNTOS -->    
                 <div class="card" style="height:100%;" id="blkPuntos">
                     <div class="card-header">
                         <div class="row">
@@ -244,6 +298,7 @@
                                                
                     </div>
                 </div>
+                <!-- MODAL PUNTOS -->
 
                 <!-- MODAL SUB PRODUCTO -->
                 <div id="modal-sub-producto"></div>
@@ -354,7 +409,7 @@
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-success" onclick="confirmar('¿Desea editar este pedido?','editar')"><i class="fas fa-save"></i> Guarda</button>
+                                <button type="button" class="btn btn-success" onclick="confirmar('¿Desea editar este pedido?','editar')"><i class="fas fa-save"></i> Guardar</button>
                             </div>
                         </div>
                     </div>
@@ -378,14 +433,40 @@
                                                                               
                                     </div>
                                     <div class="col-md-3">
-                                        <button type="button" class="btn btn-success btn-block btn-xs" onclick="liberar_mesa()"><i class="fas fa-save"></i> Guarda</button>
+                                        <button type="button" class="btn btn-success btn-block btn-xs" onclick="liberar_mesa()"><i class="fas fa-save"></i> Liberar</button>
                                      </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <!-- MODAL LIBERAR MESA -->     
+                <!-- MODAL LIBERAR MESA -->    
+                
+                <!-- MODAL CAMBIAR MESA -->
+                <div class="modal fade"  role="dialog" data-backdrop="static" data-keyboard="false" id="blkcambiar_mesa">
+                    <div class="modal-dialog modal-lg modal-dialog-centered">                        
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">CAMBIAR PEDIDOS A NUEVA MESA</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body" style="height:100px;">                                
+                                <div class="row justify-content-md-center">
+                                    <div class="col-md-6">
+                                        <h5 class="modal-title">Seleccione la de Mesa Destino</h5>                                       
+                                        <select class="form-control" id="mesas_destino" style="text-align-last:center;"></select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <button type="button" class="btn btn-success btn-block btn-xs" onclick="mover_mesa()"><i class="fas fa-s'ave"></i> Mover</button>
+                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- MODAL LIBERAR MESA -->  
 
 
 
@@ -424,14 +505,14 @@
             <div class="col-2">
                 <div class="card text-center" style="height:100%;">
                     <div class="card-body  iscroll-mesas">
-                        <button type="button" class="btn btn-link btn-block" onclick="abrirPuntos()" style="text-decoration:none;background:midnightblue;color:white;">Puntos</button>                        
-                        <hr>
-                        <div id="listado-mesas"></div>
+                        <!-- <button type="button" class="btn btn-link btn-block" onclick="abrirPuntos()" style="text-decoration:none;background:midnightblue;color:white;">Puntos</button>                         -->
+                        <button type="button" class="btn btn-link btn-block" onclick="abrirAcciones()" style="text-decoration:none;background:midnightblue;color:white;">Acciones</button>                        
                         <hr>
                         <button type="button" class="btn btn-primary btn-block" onclick="confirmar('¿Desea cerrar sesion?','sesion_cerrar')"><i class="fas fa-power-off"></i></button>                       
                         <hr>
-                        <button type="button" class="btn btn-link btn-block" style="text-decoration:none;background:#881420;color:white;" data-toggle="modal" data-target="#liberar_mesa">LIBERAR MESA</button>
-                        
+                        <div id="listado-mesas"></div>                        
+                        <hr>
+                        <button type="button" class="btn btn-link btn-block" style="text-decoration:none;background:#881420;color:white;" data-toggle="modal" data-target="#liberar_mesa">LIBERAR MESA</button>                        
                         <input type="hidden" class="form-control" id="codigo_mesa" placeholder="ID MESA"> 
                         <input type="hidden" class="form-control" id="mesa" placeholder="LA MESA"> 
                         <input type="hidden" class="form-control" id="estado_convencional" placeholder="EC"> 

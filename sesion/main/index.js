@@ -6,8 +6,8 @@
   });
 
   function setDOM() {
-    DOM.form = $(".form-signin"),
-    DOM.usuario = $("#txtusuario"),
+    DOM.form = $(".form-signin");
+    DOM.usuario = $("#txtusuario");
     DOM.clave = $("#txtclave");
 }
 

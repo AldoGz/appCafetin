@@ -3,41 +3,49 @@ var DOM = {};
 $(document).ready(function () {
     setDOM();
     setEventos();
-    listarTC(); 
+    listarTC();     
     bloque(1);
     refrescarMesa();
     $("#blkDireccion").hide();
-    listarPromociones();
+    //listarPromociones();
 });
 
 
 function setDOM(){
-    DOM.blkSinAcciones = $("#blkSinAcciones"),
-    DOM.blkPagarMesa = $("#blkPagarMesa"),
-    DOM.blkAlertas = $("#blkAlertas"),
+    DOM.blkSinAcciones = $("#blkSinAcciones");
+    DOM.blkPagarMesa = $("#blkPagarMesa");
+    DOM.blkAlertas = $("#blkAlertas");
+    DOM.blkListarPedidos = $("#blkListarPedidos");
 
-    DOM.listado_producto_1 = $("#listado-producto-1"),
-    DOM.listado_producto_2 = $("#listado-producto-2"),
+    DOM.listado_producto_1 = $("#listado-producto-1");
+    DOM.listado_producto_2 = $("#listado-producto-2");
 
+    DOM.cboTurno = $("#cboTurno");
+    DOM.cboMedioPago = $("#cboMedioPago");
     
-    DOM.titulo_entregado = $("#titulo-panel-entregados"),
-    DOM.estado_convencional = $("#estado_convencional"),
+    DOM.titulo_entregado = $("#titulo-panel-entregados");
+    DOM.estado_convencional = $("#estado_convencional");
     
-    DOM.cantidad = $("#cantidad"),
-    DOM.observaciones = $("#observaciones"),
-    DOM.btnConfirmarPedido = $("#ConfirmarPedido"),
-    DOM.btnCerrarPedido = $("#CerrarPedido"),
-    DOM.btnGuardarPedido = $("#GuardarPedido"),
-    DOM.btnGuardarEntregable = $("#ConfirmarEntregable"),
+    DOM.cantidad = $("#cantidad");
+    DOM.observaciones = $("#observaciones");
+    DOM.btnConfirmarPedido = $("#ConfirmarPedido");
+    DOM.btnCerrarPedido = $("#CerrarPedido");
+    DOM.btnGuardarPedido = $("#GuardarPedido");
+    DOM.btnGuardarEntregable = $("#ConfirmarEntregable");
 
-    DOM.btnCerrarEntregable = $("#CerrarEntregable"),
+    DOM.btnCerrarEntregable = $("#CerrarEntregable");
 
-    DOM.listado_mesas = $("#listado-mesas"),
+    DOM.btnPagoParcial = $("#Pago_parcial");
+
+    DOM.listado_mesas = $("#listado-mesas");
     DOM.listado_pedido_entregado = $("#listado-pedido-entregado");
-
+    DOM.listado_pedido_espera = $("#listado_pedido_espera");
+    DOM.importe_espera = $("#importe_espera");
 
     //**//
     DOM.btnCerrarReporte = $("#CerrarReporte");
+    DOM.btnCerrarPedidosListado = $("#CerrarPedidosListado");
+    
     DOM.listar_reporte = $("#listado-reporte");
     DOM.fecha_inicio = $("#fecha_inicio");
     DOM.fecha_fin = $("#fecha_fin");
@@ -51,26 +59,28 @@ function setDOM(){
     DOM.razon_social = $("#razon_social");
     DOM.direccion = $("#direccion");
     DOM.usuario = $("#usuario");
-    DOM.monto = $("#monto_pagado");
+
 
     DOM.listado_apagar = $("#listado-pedidos-por-pagar");
     DOM.titulo = $("#titulo-panel");
     DOM.codigo_mesa = $("#codigo_mesa");
+    DOM.mesa = $("#mesa");;
 
     DOM.btnPagar = $("#PagarPedido");
 
     DOM.listado_pedidos_puntos = $("#listado-pedidos-puntos");
-    DOM.listado_promociones = $("#listado-pedidos-puntos-promocion");
+    //DOM.listado_promociones = $("#listado-pedidos-puntos-promocion");
 
     DOM.ticket = $("#text_ticket");
-
     DOM.text_descuento = $("#text_descuento");
+    DOM.monto = $("#monto_pagado");
     DOM.monto_descuento = $("#monto_descuento");
     DOM.monto_amortizacion = $("#monto_amortizacion");
     DOM.btnDescuento = $("#btnDescuento");
     DOM.cantidad_puntos = $("#cantidad_puntos");
     DOM.texto_usuario_detalle = $("#texto-usuario");
-
+    DOM.mesa_usuario_detalle = $("#mesa-usuario");
+    DOM.fecha_usuario_detalle = $("#fecha-usuario");
     DOM.array = [];
 
     DOM.ticket_flag = false;
@@ -78,20 +88,29 @@ function setDOM(){
 
 function bloque(tipo){
     switch(tipo){
-        case 1:
+        case 1: //INICIO
             DOM.blkSinAcciones.show();
             DOM.blkPagarMesa.hide();
             DOM.blkAlertas.hide();
+            DOM.blkListarPedidos.hide();
             break;
-        case 2:
+        case 2: //ABRIR FACTURACION
             DOM.blkSinAcciones.hide();
             DOM.blkPagarMesa.show();
             DOM.blkAlertas.hide();
+            DOM.blkListarPedidos.hide();
             break;
         case 3:
             DOM.blkSinAcciones.hide();
             DOM.blkPagarMesa.hide();
             DOM.blkAlertas.show();
+            DOM.blkListarPedidos.hide();
+            break;
+        case 4: //LISTAR PEDIDOS
+            DOM.blkSinAcciones.hide();
+            DOM.blkPagarMesa.hide();
+            DOM.blkAlertas.hide();
+            DOM.blkListarPedidos.show();
             break;
     }
 }
@@ -114,10 +133,15 @@ function cargarMesas(){
                     var texto = "secondary";
                     var actividad = "";
                     if ( !bandera ) {
-                        if ( parseInt(item.recogido) === 0 ) {
+                        if ( parseInt(item.espera) > 0 || parseInt(item.preparado) > 0) {
+                            texto = "success";
+                            actividad = 'onclick="abrirEspera('+item.id+",'"+item.numero+"','"+item.estado_convencional+"'"+')"';
+                        }
+                        else if ( parseInt(item.recogido) === 0 ) {
                             texto = "info";
                             actividad = "";
-                        }else{
+
+                        }else {
                             texto = "danger";
                             actividad = 'onclick="abrirFacturacion('+item.id+",'"+item.numero+"'"+ ')"';
                         }                   
@@ -136,9 +160,77 @@ function cargarMesas(){
     }, funcion);
 }
 
+function abrirEspera(id_mesa,mesa,estado_convencional){
+    bloque(4);
+    DOM.codigo_mesa.val(id_mesa);
+    DOM.mesa.val(mesa);
+    DOM.estado_convencional.val(estado_convencional);
+    DOM.blkListarPedidos.find(".titulo").text(mesa.substring(0,1)+ mesa.toLowerCase().substring(1)+": Detalle del Pedido");
+    var funcion = function (resultado) {        
+        if (resultado.estado === 200) {
+            if ( resultado.datos.rpt === true ) {
+                var html = '';
+                DOM.btnPagoParcial.html('');
+                $.each(resultado.datos.msj.pedidos, function(i,item){                    
+                    //html += item.estado === "4" ? '<tr style="background: red;">':'<tr>';
+                    switch (item.estado) {
+                        case "1":
+                            html += '<tr ><td style="background: yellow; display: flex;justify-content: center;align-items: center;font-size: 2rem"><i class="fas fa-pen"></i></td>';
+                            break; 
+                        case "2":
+                            html += '<tr><td style="background: blue;display: flex;justify-content: center;align-items: center;font-size: 2rem"><i class="fas fa-fire"></i></td>';
+                            break; 
+                        case "3":
+                            html += '<tr><td style="background: green;display: flex;justify-content: center;align-items: center;font-size: 2rem"><i class="fas fa-shopping-cart"></i></td>';
+                            DOM.btnPagoParcial.html('<button type="button" class="btn btn-danger btn-block" onclick="abrirFacturacion('+id_mesa+",'"+mesa+"'"+ ')" >Pago Parcial</button>');
+                            break; 
+                        case "4":
+                            html += '<tr style="text-decoration:line-through;color:red"><td style="color:black;background: red; display: flex;justify-content: center;align-items: center;font-size: 2rem"><i class="fas fa-trash"></i></td>';
+                            break;                    
+                        case "6":
+                            html += '<tr style="text-decoration:line-through;color:green"><td style="color:white;background: black; display: flex;justify-content: center;align-items: center;font-size: 2rem"><i class="fas fa-print"></i></td>';
+                            break;                    
+                        default:
+                            html += '<tr><td>&nbsp&nbsp&nbsp&nbsp</td>'
+                            break;
+                    }
+                    
+                        html += '<td class="text-center">';
+                            html += '<div class="justify-content-between">';
+                                /* if ( parseInt(item.item) > 0 ){
+                                    html += '<small sytle="font-size:7px;">Plato '+item.item+'</small>';
+                                } */
+                                html += '<h5 sytle="font-size:12px;">'+item.producto+'</h5>';                                
+                                html += '<small sytle="font-size:7px;">'+item.nota+'</small>';
+                            html += '</div>';
+                        html += '</td>';
+                        html += '<td class="text-center">'+item.cantidad+'</td>';
+                        html += '<td class="text-center">S/. '+item.precio+'</td>';
+                        html += '<td class="text-center">S/. '+item.importe+'</td>';
+                        html += '<td class="text-center">';
+                        html += '</td>';
+                    html += '</tr>';
+                });
+                DOM.listado_pedido_espera.html(html);
+                var importe = resultado.datos.msj.total == null ? '0.00' : resultado.datos.msj.total;
+                DOM.importe_espera.text("TOTAL: S/. "+importe);
+            }else{
+                Validar.alert("warning",resultado.datos.msj.errorInfo[2],2000);
+            }            
+        }
+    }
 
+    new Ajxur.Api({
+        modelo: "Pedido",
+        metodo: "listarPedidosCajero",
+        data_in : {
+            p_id_mesa : id_mesa
+        }
+    }, funcion);
+}
 
 function abrirFacturacion(id_mesa,mesa){
+    cargarMediosPago();
     DOM.titulo.text("Facturación para "+(mesa.substring(0,1) === 'M' ? 'la ' :'el ')+mesa.toLowerCase());
     DOM.codigo_mesa.val(id_mesa);
     bloque(2);
@@ -195,6 +287,14 @@ function montoTotal(){
     return importe;
 }
 
+function montoAmortizacion(){
+    var importe = 0;
+    $.each(DOM.listado_apagar.find("tr"), function(i, item){
+        importe += parseFloat($(this).find("td").eq(5).html().split(" ")[1]);        
+    });
+    return importe;
+}
+
 function fecha(){
     var fecha = new Date(); //Fecha actual
     var mes = fecha.getMonth()+1; //obteniendo mes
@@ -212,6 +312,7 @@ function fecha(){
 function abrirReporte(){
     DOM.fecha_inicio.val(fecha());
     DOM.fecha_fin.val(fecha());
+    cargarTurnosCB();
     bloque(3);
 }
 
@@ -307,7 +408,10 @@ function GuardarFacturacion(){
                 DOM.direccion.val("");
                 DOM.usuario.val("");
                 DOM.monto.val("");
+                DOM.monto_descuento.val("");
+                DOM.monto_amortizacion.val("");
                 DOM.listado_apagar.empty();
+                DOM.cboMedioPago.val("s");
                 bloque(1);
                 $("#blkDireccion").hide();
                 $("#confirmar_pago").modal("hide");
@@ -358,6 +462,7 @@ function GuardarFacturacion(){
         DOM.monto_descuento.val().split(" ")[1],
         DOM.monto_amortizacion.val().split(" ")[1],
         DOM.ticket.val(),
+        DOM.cboMedioPago.val(),
         producto,
         cantidad,
         DOM.cantidad_puntos.val(),
@@ -389,18 +494,23 @@ function setEventos(){
     DOM.listado_apagar.on("change","input[name=id_toma_pedido]", function(){
         DOM.array.splice(0,DOM.array.length);
         var nodo = this.parentElement.parentElement.parentElement;
+        var subtotal = 0;
+        var descuentos = 0;
         var total = 0;
 
         $.each($(nodo).find("tr"), function(i,item){
             var input = $(this).find("td").eq(0);           
 
             if ( input.find("input")[0].checked ) {
-                total += parseFloat($(this).find("td").eq(5).html().split(" ")[1]);
+                subtotal += parseFloat($(this).find("td").eq(5).html().split(" ")[1]);
+                descuentos += parseFloat($(this).find("td").eq(4).html().split(" ")[1]);
+                //total += parseFloat($(this).find("td").eq(5).html().split(" ")[1]);
                 DOM.array.push(input.find("input")[0].value);
             }            
         });
-        DOM.monto.val('S/. '+parseFloat(total).toFixed(2));
-        DOM.monto_amortizacion.val('S/. '+parseFloat(total).toFixed(2));        
+        DOM.monto.val('S/. '+parseFloat(subtotal).toFixed(2));
+        DOM.monto_descuento.val('S/. '+parseFloat(descuentos).toFixed(2));
+        DOM.monto_amortizacion.val('S/. '+parseFloat(subtotal-descuentos).toFixed(2));        
     });
 
 
@@ -424,8 +534,13 @@ function setEventos(){
             return 0;
         }
 
-        if ( DOM.tipo_comprobante.val() === "01" && DOM.documento.val() === "" ) {
+        if ( DOM.tipo_comprobante.val() === "03" && DOM.documento.val() === "" ) {
             Validar.alert("warning","Debe ingresar el número de factura",2000);
+            return 0;
+        }
+
+        if ( DOM.tipo_comprobante.val() === "02" && DOM.documento.val() === "" ) {
+            Validar.alert("warning","Debe ingresar el número de DNI",2000);
             return 0;
         }
 
@@ -470,19 +585,19 @@ function setEventos(){
             DOM.documento.val("");
             return 0;
         }
-        if ( DOM.documento.val().length < 11 && DOM.tipo_comprobante.val() === "01" ) {
+        if ( DOM.documento.val().length < 11 && DOM.tipo_comprobante.val() === "03" ) {
             DOM.razon_social.val("");   
             return 0;
         }
 
-        if ( DOM.documento.val().length < 8 && DOM.tipo_comprobante.val() === "03" ) {
+        if ( DOM.documento.val().length < 8 && DOM.tipo_comprobante.val() === "02" ) {
             DOM.razon_social.val("");   
             return 0;
         }
 
         $("#cargando").modal('show');
 
-        if ( DOM.tipo_comprobante.val() === "01" && DOM.documento.val().length === 11 ) {            
+        if ( DOM.tipo_comprobante.val() === "03" && DOM.documento.val().length === 11 ) {            
             var funcion = function (resultado) {        
                 if (resultado.estado === 200) {
                     if (resultado.datos.rpt === true) {                    
@@ -497,14 +612,17 @@ function setEventos(){
                             var html = '';
                             if ( !datos.puntos  ) {
                                 html += '<tr>';
-                                    html += '<td colspan="3" class="text-center">Sin resultados</td>';
+                                    html += '<td colspan="4" class="text-center">Sin resultados</td>';
                                 html += '</tr>'; 
                             }else{
+                                $.each(datos.puntos, function(i,item){
                                 html += '<tr>';
-                                    html += '<td class="text-center">'+datos.puntos.documento+'</td>';
-                                    html += '<td class="text-center">'+datos.puntos.razon_social+'</td>';
-                                    html += '<td class="text-center">'+datos.puntos.puntos+'</td>';
+                                    html += '<td class="text-center"><button type="button" class="btn btn-info btn-xs" data-toggle="modal" data-target="#ver" onclick="abrirDetalle('+item.id+')" title="Ver detalle"><i class="far fa-eye"></i></button></td>';
+                                    html += '<td class="text-center">'+item.comprobante+'</td>';
+                                    html += '<td class="text-center">'+item.fecha_registro_facturacion+'</td>';
+                                    html += '<td class="text-center">'+item.total+'</td>';
                                 html += '</tr>';
+                                });
                             }
 
                             DOM.listado_pedidos_puntos.html(html);
@@ -526,7 +644,7 @@ function setEventos(){
             }, funcion);        
         }
 
-        if ( DOM.tipo_comprobante.val() === "03" && DOM.documento.val().length === 8 ) {
+        if ( DOM.tipo_comprobante.val() === "02" && DOM.documento.val().length === 8 ) {
             var funcion = function (resultado) {        
                 if (resultado.estado === 200) {
                     if (resultado.datos.rpt === true) { 
@@ -535,15 +653,16 @@ function setEventos(){
                             DOM.razon_social.val(datos.documento.informacion.nombres+" "+datos.documento.informacion.apellidoPaterno+" "+datos.documento.informacion.apellidoMaterno);  
 
                             var html = '';
-                            if ( datos.puntos.documento === null ) {
+                            if ( !datos.puntos) {
                                 html += '<tr>';
-                                    html += '<td colspan="3" class="text-center">Sin resultados</td>';
+                                    html += '<td colspan="4" class="text-center">Sin resultados</td>';
                                 html += '</tr>'; 
                             }else{
                                 html += '<tr>';
-                                    html += '<td class="text-center">'+datos.puntos.documento+'</td>';
-                                    html += '<td class="text-center">'+datos.puntos.razon_social+'</td>';
-                                    html += '<td class="text-center">'+datos.puntos.puntos+'</td>';
+                                    html += '<td class="text-center"><button type="button" class="btn btn-info btn-xs" data-toggle="modal" data-target="#ver" onclick="abrirDetalle('+datos.puntos.id+')" title="Ver detalle"><i class="far fa-eye"></i></button></td>';
+                                    html += '<td class="text-center">'+datos.puntos.comprobante+'</td>';
+                                    html += '<td class="text-center">'+datos.puntos.fecha_registro_facturacion+'</td>';
+                                    html += '<td class="text-center">'+datos.puntos.total+'</td>';
                                 html += '</tr>';
                             }
 
@@ -578,26 +697,41 @@ function setEventos(){
                 DOM.serie_comprobante.empty();
                 DOM.correlativo.val("");
                 DOM.documento.val("");
+                DOM.documento.prop("disabled",true);                
                 DOM.razon_social.val("");
                 DOM.direccion.val("");
                 DOM.ticket.prop("disabled",false);
                 break;
-            case "01":
-                $("#blkDireccion").show();
-                DOM.serie_comprobante.prop("disabled",false);
-                DOM.correlativo.val("");
-                DOM.correlativo.prop("disabled",false);
-                DOM.documento.prop("disabled",false);
-                listarSC();    
-                break;
-            case "03":
+            case "01"://TICKET
                 $("#blkDireccion").hide();
                 DOM.serie_comprobante.prop("disabled",false);
                 DOM.correlativo.val("");
+                DOM.razon_social.val("");
+                DOM.razon_social.prop("disabled",false);
                 DOM.correlativo.prop("disabled",false);
-                DOM.documento.prop("disabled",false);
+                DOM.documento.prop("disabled",true);
                 listarSC();    
                 break;
+            case "02"://BOLETA
+                $("#blkDireccion").hide();
+                DOM.serie_comprobante.prop("disabled",false);
+                DOM.correlativo.val("");
+                DOM.razon_social.val("");
+                DOM.razon_social.prop("disabled",true);
+                DOM.correlativo.prop("disabled",false);
+                //DOM.documento.prop("disabled",false);
+                listarSC();    
+                break;
+            case "03"://FACTURA
+                $("#blkDireccion").show();
+                DOM.serie_comprobante.prop("disabled",false);
+                DOM.correlativo.val("");
+                DOM.razon_social.val("");
+                DOM.razon_social.prop("disabled",true);
+                DOM.correlativo.prop("disabled",false);
+                //DOM.documento.prop("disabled",false);
+                listarSC();    
+                break;                
         }     
     });
 
@@ -606,6 +740,10 @@ function setEventos(){
             viewCorrelativo();
         }else{
             DOM.correlativo.val("");
+        }
+        if  (DOM.tipo_comprobante.val()==='02' ||DOM.tipo_comprobante.val()==='03')
+        {
+            DOM.documento.prop("disabled",false);
         }
     })
 
@@ -617,14 +755,39 @@ function setEventos(){
         DOM.codigo_mesa.val("");
     });
 
+    DOM.btnCerrarPedidosListado.click(function(){
+        bloque(1);
+        DOM.codigo_mesa.val("");
+    });
+
     DOM.btnFiltrarReporte.click(function(){
         var tipo;
+        var finicio;
+        var ffin;
+        var turno=DOM.cboTurno.val();
         $.each($("input[name='intTipo']"), function(i,item){
             if ( $(this)[0].checked ) {
                 tipo = $(this)[0].value;
             }
         });
 
+        if(turno==='*'){
+            finicio=DOM.fecha_inicio.val()+' 00:00:00';
+            ffin=DOM.fecha_fin.val()+' 23:59:59';
+        }
+        if(turno==='1'){
+            finicio=DOM.fecha_inicio.val()+' 00:00:00';
+            ffin=DOM.fecha_fin.val()+' 23:59:59';
+        }
+        else if(turno==='2') {
+            finicio=DOM.fecha_inicio.val()+' 00:00:00';
+            ffin=DOM.fecha_fin.val()+' 15:59:59';
+        }
+        else if (turno==='3'){
+            finicio=DOM.fecha_inicio.val()+' 16:00:00';
+            ffin=DOM.fecha_fin.val()+' 23:59:59';
+        }
+        
         var funcion = function (resultado) {        
             if (resultado.estado === 200) {
                 if (resultado.datos.rpt === true) { 
@@ -634,35 +797,48 @@ function setEventos(){
                         return 0;
                     }else{
                         var html = '';
-                        var suma = 0;
-                        html += '<table class="table table-bordered">'
+                        var suma  = 0;
+                        var suma_subtotales  = 0;
+                        var suma_descuentos = 0;
+                        var suma_totales = 0;
+                        var combo = document.getElementById("cboTurno");
+                        html += '<table id="tb_export" class="table table-bordered">'
                         if ( tipo === "1" ) {
+                            html += '<caption><font hidden>Reporte de Ventas con Fecha inicio: '+DOM.fecha_inicio.val()+' Fecha Fin: '+DOM.fecha_fin.val()+' en el turno "'+combo.options[combo.selectedIndex].text+'"</font></caption>';
                             html += '<thead>';
                                 html += '<tr>';
                                     html += '<th class="text-center" scope="col"></th>';
                                     html += '<th class="text-center" scope="col">Comprobante</th>';
                                     html += '<th class="text-center" scope="col">Fecha pedido</th>';
                                     html += '<th class="text-center" scope="col">Fecha facturación</th>';
+                                    html += '<th class="text-center" scope="col">SubTotal</th>';                                    
+                                    html += '<th class="text-center" scope="col">Descuento</th>';                                    
                                     html += '<th class="text-center" scope="col">Total</th>';                                    
+                                    html += '<th class="text-center" scope="col">Ticket</th>';
                                 html += '</tr>';
                             html += '</thead>';
                             html += '<tbody>';
                             $.each(resultado.datos.msj, function(i,item){
                                 html += '<tr data-id="'+item.id_pedido+'">';
                                     html += '<td class="text-center">';
-                                        html += '<button type="button" class="btn btn-info btn-xs" data-toggle="modal" data-target="#ver" onclick="abrirDetalle('+item.id+')" title="Ver detalle"><i class="far fa-eye"></i></button>';
+                                        html += '<button type="button" class="btn btn-info btn-xs" data-toggle="modal" data-target="#ver" onclick="abrirDetalle('+item.id+')" title="Ver detalle"><i class="far fa-eye"><font hidden>'+item.id+'</font></i></button>';
                                     html += '</td>';
                                     html += '<td class="text-center">'+item.comprobante+'</td>';
                                     html += '<td class="text-center">'+item.fecha_registro_pedido+'</td>';
                                     html += '<td class="text-center">'+item.fecha_registro_facturacion+'</td>';
+                                    html += '<td class="text-center">S/. '+item.subtotal+'</td>';
+                                    html += '<td class="text-center">S/. '+item.descuentos+'</td>';
                                     html += '<td class="text-center">S/. '+item.total+'</td>';
-                                    
+                                    html += '<td class="text-center">'+item.ticket+'</td>';                                
                                 html += '</tr>';
-                                suma += parseFloat(item.total);  
+                                suma_subtotales  += parseFloat(item.subtotal);  
+                                suma_descuentos+= parseFloat(item.descuentos);  
+                                suma_totales+= parseFloat(item.total);  
                             });
-                            html += '<tr><td colspan="4"></td><td class="text-center">S/. '+suma.toFixed(2)+'</td></tr>';
+                            html += '<tr><td colspan="4"></td><td class="text-center">S/. '+suma_subtotales.toFixed(2)+'</td><td class="text-center">S/. '+suma_descuentos.toFixed(2)+'</td><td class="text-center">S/. '+suma_totales.toFixed(2)+'</td></tr>';
                             html += '</tbody>';
                         }else{
+                            html += '<caption><font hidden>Reporte de Productos con Fecha inicio: '+DOM.fecha_inicio.val()+' Fecha Fin: '+DOM.fecha_fin.val()+' en el turno "'+combo.options[combo.selectedIndex].text+'"</font></caption>';
                             html += '<thead>';
                                 html += '<tr>';
                                     html += '<th class="text-center" scope="col">Item</th>';
@@ -679,7 +855,7 @@ function setEventos(){
                                     html += '<td class="text-center">'+item.cantidad+'</td>';
                                     html += '<td class="text-center">S/. '+item.monto+'</td>';
                                 html += '</tr>';
-                                suma += parseFloat(item.monto);  
+                                suma  += parseFloat(item.monto);  
                             });
                             html += '</tbody>';
                             html += '<tr><td colspan="3"></td><td class="text-center">S/. '+suma.toFixed(2)+'</td></tr>';
@@ -695,7 +871,8 @@ function setEventos(){
         new Ajxur.Api({
             modelo: "Pedido",
             metodo: "reportePago",
-            data_out : [tipo,DOM.fecha_inicio.val(),DOM.fecha_fin.val()]
+            data_out : [tipo,finicio,ffin]
+            //data_out : [tipo,DOM.fecha_inicio.val(),DOM.fecha_fin.val()]
         }, funcion);
     });
 
@@ -704,16 +881,21 @@ function setEventos(){
         DOM.serie_comprobante.empty();
         DOM.correlativo.val("");
         DOM.documento.val("");
+        DOM.documento.prop('disabled',true);
         DOM.razon_social.val("");
         DOM.direccion.val("");
         $("#blkDireccion").hide();
         DOM.listado_apagar.empty();
         bloque(1);
         DOM.codigo_mesa.val("");
+        DOM.monto.val("");
+        DOM.monto_descuento.val("");
+        DOM.monto_amortizacion.val("");
         DOM.cantidad_puntos.val("");
         DOM.ticket.val("");
+        DOM.ticket.prop('disabled',false);
         DOM.text_descuento.val("");
-        DOM.listado_pedidos_puntos.html('<tr><td colspan="3" class="text-center">Sin resultados</td></tr>');  
+        DOM.listado_pedidos_puntos.html('<tr><td colspan="4" class="text-center">Sin resultados</td></tr>');  
         DOM.array.splice(0,DOM.array.length);              
     });
 }
@@ -750,7 +932,9 @@ function abrirDetalle(id_pedido){
         if (resultado.estado === 200) {
             if (resultado.datos.rpt === true) { 
                 var html = '';
-                var suma = 0;
+                var suma_subtotales  = 0;
+                var suma_descuentos = 0;
+                var suma_totales = 0;
                 $.each(resultado.datos.msj.rpt, function(i,item){
                     html += '<tr>';
                         html += '<td class="text-center">';
@@ -760,16 +944,20 @@ function abrirDetalle(id_pedido){
                             html += '</div>';
                         html += '</td>';
                         html += '<td class="text-center">S/. '+item.precio+'</td>';
-                        html += '<td class="text-center">'+item.cantidad+'</td>';
-                        
-                        
+                        html += '<td class="text-center">'+item.cantidad+'</td>';                                                
                         html += '<td class="text-center">S/. '+item.importe+'</td>';
+                        html += '<td class="text-center">S/. '+item.descuento+'</td>';
+                        html += '<td class="text-center">S/. '+item.total+'</td>';
                     html += '</tr>';
-                    suma += parseFloat(item.importe);
+                    suma_subtotales  += parseFloat(item.importe);  
+                    suma_descuentos+= parseFloat(item.descuento);  
+                    suma_totales+= parseFloat(item.total); 
                 });
-                html += '<tr><td colspan="3"></td><td class="text-center">S/. '+suma.toFixed(2)+'</td></tr>';
+                html += '<tr><td colspan="3"></td><td class="text-center">S/. '+suma_subtotales.toFixed(2)+'</td><td class="text-center">S/. '+suma_descuentos.toFixed(2)+'</td><td class="text-center">S/. '+suma_totales.toFixed(2)+'</td></tr>';
                 $("#listado-ver").html(html);                 
-                DOM.texto_usuario_detalle.html('<h5>USUARIO: '+resultado.datos.msj.etiqueta+'</h5>');                            
+                DOM.texto_usuario_detalle.html('<h5>USUARIO: '+resultado.datos.msj.etiqueta+'</h5>');    
+                DOM.mesa_usuario_detalle.html('<h5>'+resultado.datos.msj.mesa+'</h5>');                                                    
+                DOM.fecha_usuario_detalle.html('<h5>'+resultado.datos.msj.fecha+'</h5>'); 
             }else{
                 Validar.alert("warning",resultado.datos.msj.errorInfo[2],2000);       
             }            
@@ -837,21 +1025,21 @@ function usar_puntos(id){
                     return 0;
                 }
 
-                var suma = 0;
+                var suma  = 0;
                 $.each(DOM.listado_apagar.find("tr"), function(i,item){
                     var producto = $(this).find("td").eq(0).find("h5").eq(0).html();
 
                     if ( producto == resultado.datos.msj.nombre ) {
-                        suma += parseInt($(this).find("td").eq(1).html());    
+                        suma  += parseInt($(this).find("td").eq(1).html());    
                     }
                 });
 
-                if ( suma === 0 ) {
+                if ( suma  === 0 ) {
                     Validar.alert("warning","Ningún pedido es similar a la promoción",2000);
                     return 0;
                 }
 
-                if ( suma < parseInt(resultado.datos.msj.cantidad_producto) ) {
+                if ( suma  < parseInt(resultado.datos.msj.cantidad_producto) ) {
                     Validar.alert("warning","No tiene suficiente cantidad para reclamar tu promoción",2000);
                     return 0;   
                 }
@@ -904,3 +1092,58 @@ function usar_puntos(id){
         }
     }, funcion); 
 }
+var tableToExcel = (function() {
+  var uri = 'data:application/vnd.ms-excel;base64,'
+    , template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><meta http-equiv="content-type" content="application/vnd.ms-excel; charset=UTF-8"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table>{table}</table></body></html>'
+    , base64 = function(s) { return window.btoa(unescape(encodeURIComponent(s))) }
+    , format = function(s, c) { return s.replace(/{(\w+)}/g, function(m, p) { return c[p]; }) }
+  return function(table, name) {
+    if (!table.nodeType) table = document.getElementById(table)
+    var ctx = {worksheet: name || 'Hoja1', table: table.innerHTML}
+    window.location.href = uri + base64(format(template, ctx))
+  }
+})()
+
+function cargarTurnosCB(){
+    var funcion = function (resultado) {        
+        if (resultado.estado === 200) {
+            if (resultado.datos.rpt === true) {
+                var html = "";               
+                //html += '<option value="*">Seleccione un turno</option>';
+                $.each(resultado.datos.msj, function (i, item) { 
+                    html += '<option value="' + item.id + '">'+ item.descripcion + '</option>';
+                });
+                DOM.cboTurno.html(html);
+            }else{
+                Validar.alert("warning",resultado.datos.msj.errorInfo[2],2000); 
+            }            
+        }
+    };
+
+    new Ajxur.Api({
+        modelo: "Turnos",
+        metodo: "llenarCB"
+    }, funcion);
+}   
+
+function cargarMediosPago(){
+    var funcion = function (resultado) {        
+        if (resultado.estado === 200) {
+            if (resultado.datos.rpt === true) {
+                var html = "";               
+                //html += '<option value="*">Seleccione un turno</option>';
+                $.each(resultado.datos.msj, function (i, item) { 
+                    html += '<option value="' + item.id + '">'+ item.descripcion + '</option>';
+                });
+                DOM.cboMedioPago.html(html);
+            }else{
+                Validar.alert("warning",resultado.datos.msj.errorInfo[2],2000); 
+            }            
+        }
+    };
+
+    new Ajxur.Api({
+        modelo: "MediosPago",
+        metodo: "llenarCB"
+    }, funcion);
+}  

@@ -179,8 +179,14 @@
                                                                 </div>
                                                             </div>
                                                             <div class="row clearfix">
-                                                                <div class="col-sm-6"> 
+                                                                
+                                                                <div class="col-sm-3"> <h5>Tipo</h5>
                                                                     <select class="form-control show-tick" id="intCodigoTipoEmpleado">
+                                                                    </select>                                                                
+                                                                </div>
+                                                                
+                                                                <div class="col-sm-3"> <h5>Ubicación</h5>
+                                                                    <select class="form-control show-tick" id="intUbicacion">
                                                                     </select>                                                                
                                                                 </div>
                                                             </div>

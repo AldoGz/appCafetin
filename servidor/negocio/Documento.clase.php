@@ -17,6 +17,27 @@ class Documento extends Conexion {
         try {
             $resultado["documento"] = $tipo === "RUC" ? $this->consultarRUC($this->getDocumento()) : $this->consultarDNI($this->getDocumento());
 
+            $sql = "SELECT
+                        fa.id as id,                         
+                        CONCAT(tc.abreviatura,'-',CONCAT(REPEAT('0', 3-LENGTH(fa.numero)), fa.numero),'-',CONCAT(REPEAT('0', 7-LENGTH(fa.correlativo)), fa.correlativo)) as comprobante,
+                        fa.fecha_registro as fecha_registro_facturacion,
+                        fa.monto_amortizacion as total
+                    FROM facturacion fa
+                    INNER JOIN tipo_comprobante tc ON tc.id = fa.id_tipo_comprobante
+                    WHERE fa.documento = :0 AND estado_puntos = 1
+                    ORDER BY 3 DESC";
+            $resultado["puntos"] = $this->consultarFilas($sql,[$this->getDocumento()]);
+            return array("rpt"=>true,"msj"=>$resultado);
+        } catch (Exception $exc) {
+            return array("rpt"=>false,"msj"=>$exc);
+            throw $exc;
+        }
+    }
+
+    public function preguntarv1($tipo) {
+        try {
+            $resultado["documento"] = $tipo === "RUC" ? $this->consultarRUC($this->getDocumento()) : $this->consultarDNI($this->getDocumento());
+
             $sql = "SELECT 
                         documento,
                         razon_social,

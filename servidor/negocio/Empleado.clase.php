@@ -14,6 +14,7 @@ class Empleado extends Conexion {
     private $tele_dos;
     private $estado;
     private $id_tipo_empleado;
+    private $ubicacion;
 
     public function getId(){
         return $this->id;
@@ -111,6 +112,15 @@ class Empleado extends Conexion {
     
     public function setId_tipo_empleado($id_tipo_empleado){
         $this->id_tipo_empleado = $id_tipo_empleado;
+        return $this;
+    }
+
+    public function getUbicacion(){
+        return $this->ubicacion;
+    }
+    
+    public function setUbicacion($ubicacion){
+        $this->ubicacion = $ubicacion;
         return $this;
     }
 

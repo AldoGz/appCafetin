@@ -12,7 +12,7 @@ $(document).ready(function () {
     refrescarMesa();
     cantidadEditar();
     listarPromociones();
-    cargarMesaLiberar();
+    cargarComboMesas();
 });
 
 
@@ -23,6 +23,7 @@ function setDOM(){
     DOM.blkEspera = $("#blkEnEspera");
     DOM.blkEntregar = $("#blkEntregar");
     DOM.blkPuntos = $("#blkPuntos");
+    DOM.blkOtrasAcciones = $("#blkOtrasAcciones");
     DOM.blkNombreCliente = $("#blkNombreCliente"),
     DOM.codigo_mesa = $("#codigo_mesa");
     DOM.mesa = $("#mesa");
@@ -48,8 +49,10 @@ function setDOM(){
     DOM.modal_confirmacion = $("#modal_confirmacion");
     DOM.array = [];
     DOM.listado_pedido_espera = $("#listado_pedido_espera");
+    DOM.listado_pedido_mozo =$("#listado_pedido_mozo");
     DOM.listado_pedido_entrega = $("#listado_pedido_entrega");
     DOM.importe_espera = $("#importe_espera");
+    DOM.importe_espera_mozo = $("#importe_espera_mozo");
     DOM.importe_entrega = $("#importe_entrega");
     DOM.modal_editar_pedido = $("#modal-editar-pedido");
     DOM.codigo_pedido = $("#codigo_pedido");
@@ -74,9 +77,14 @@ function setDOM(){
     DOM.tb_producto_categoria = $("#tb_producto_categoria");
 
     DOM.sesion = ""; 
+    DOM.ubicacion="";
 
     DOM.btnPedirMesero = $("#btn-pedir-mesero");
 
+    DOM.cboMesasLiberar = $("#mesas_liberar");
+    DOM.cboMesasConsultar = $("#mesas_consultar");
+    DOM.cboMesasDestino = $("#mesas_destino");
+    
 
 }
 
@@ -89,6 +97,7 @@ function bloque(tipo){
             DOM.blkEspera.hide();
             DOM.blkEntregar.hide();
             DOM.blkPuntos.hide();
+            DOM.blkOtrasAcciones.hide();
             break;
         case 2:
             DOM.blkSinAcciones.hide();
@@ -97,6 +106,7 @@ function bloque(tipo){
             DOM.blkEspera.hide();
             DOM.blkEntregar.hide();
             DOM.blkPuntos.hide();
+            DOM.blkOtrasAcciones.hide();
             break;
         case 3:
             DOM.blkSinAcciones.hide();
@@ -105,6 +115,7 @@ function bloque(tipo){
             DOM.blkEspera.hide();
             DOM.blkEntregar.hide();
             DOM.blkPuntos.hide();
+            DOM.blkOtrasAcciones.hide();
             break;
         case 4:
             DOM.blkSinAcciones.hide();
@@ -113,6 +124,7 @@ function bloque(tipo){
             DOM.blkEspera.show();
             DOM.blkEntregar.hide();
             DOM.blkPuntos.hide();
+            DOM.blkOtrasAcciones.hide();
             break;
         case 5:
             DOM.blkSinAcciones.hide();
@@ -121,14 +133,25 @@ function bloque(tipo){
             DOM.blkEspera.hide();
             DOM.blkEntregar.show();
             DOM.blkPuntos.hide();
+            DOM.blkOtrasAcciones.hide();
             break;
-        case 6:
+        case 6: //  PUNTOS
             DOM.blkSinAcciones.hide();
             DOM.blkPedido.hide();
             DOM.blkObservaciones.hide();
             DOM.blkEspera.hide();
             DOM.blkEntregar.hide();
             DOM.blkPuntos.show();
+            DOM.blkOtrasAcciones.hide();
+            break;
+        case 7: //  ACCIONES
+            DOM.blkSinAcciones.hide();
+            DOM.blkPedido.hide();
+            DOM.blkObservaciones.hide();
+            DOM.blkEspera.hide();
+            DOM.blkEntregar.hide();
+            DOM.blkPuntos.hide();
+            DOM.blkOtrasAcciones.show();
             break;
     }
 }
@@ -149,7 +172,7 @@ function listarBar(){
                                             html += '<div class="row" style="margin: 15 0 15 0;">';
                                                 
                                                 html += '<div class="col-md-7"  style="cursor: pointer;" onclick="abrirProductoDescripcion('+value.id+')">';                        
-                                                html += '<h5 class="text-center">'+value.nombre+'</h5>';
+                                                html += '<h5 class="text-right">'+value.nombre+'</h5>';
                                                 html += '</div>';
                                                 html += '<div class="col-md-2">';
                                                     html += '<input class="form-control form-control-sm producto_precio" type="hidden" value="'+value.precio+'">'; 
@@ -299,7 +322,7 @@ function listarCocina(){
                                                 html += '<div class="row" style="margin: 15 0 15 0;">';
                                                     
                                                     html += '<div class="col-md-7"  style="cursor: pointer;" onclick="abrirProductoDescripcion('+value.id+')">';                        
-                                                        html += '<h5 class="text-center" >'+value.nombre+'</h5>';
+                                                        html += '<h5 class="text-right" >'+value.nombre+'</h5>';
                                                     html += '</div>';
                                                     html += '<div class="col-md-2">';
                                                         html += '<input class="form-control form-control-sm producto_precio" type="hidden" value="'+value.precio+'">'; 
@@ -319,7 +342,7 @@ function listarCocina(){
                                                 html += '<div class="row" style="margin: 15 0 15 0;">';
                                                     
                                                     html += '<div class="col-md-7"  style="cursor: pointer;" onclick="abrirProductoDescripcion('+value.id+')">';                        
-                                                        html += '<h5 class="text-center" >'+value.nombre+'</h5>';
+                                                        html += '<h5 class="text-right" >'+value.nombre+'</h5>';
                                                     html += '</div>';
                                                     html += '<div class="col-md-1"></div>';
                                                     html += '<div class="col-md-2">';
@@ -928,7 +951,7 @@ function acciones_espera(estado){
     var funcion = function (resultado) {        
         if (resultado.estado === 200) {
             if ( resultado.datos.rpt === true ){
-                limpiar_espera();
+                limpiar_espera();                
                 Validar.alert("warning",resultado.datos.msj,2000);
             }else{
                 Validar.alert("warning",resultado.datos.msj.errorInfo[2],2000);                                
@@ -939,7 +962,7 @@ function acciones_espera(estado){
     new Ajxur.Api({
         modelo: "Pedido",
         metodo: "darBaja",
-        data_out :[DOM.nombre_cliente.val(),estado]
+        data_out :[DOM.nombre_cliente.val(),estado,DOM.codigo_mesa.val()]
     }, funcion);
 }
 
@@ -1027,7 +1050,6 @@ function acciones_pedido(){
             }            
         }
     }
-    
     new Ajxur.Api({
         modelo: "Pedido",
         metodo: "agregar",
@@ -1115,6 +1137,7 @@ function cargarAll(){
     var funcion = function (resultado) {   
         if (resultado.estado === 200) {
             DOM.sesion = resultado.datos.msj.dni;
+            DOM.ubicacion= resultado.datos.msj.ubicacion;
             if( DOM.sesion == "super" ){
                 DOM.btnPedirMesero.hide();
             }             
@@ -1258,50 +1281,47 @@ function cargarMesas(){
                             texto = 'warning';
                             actividad = 'onclick="abrirEspera('+item.id+",'"+item.numero+"','"+item.estado_convencional+"'"+')"';
                         }
-
                         html += '<button type="button" class="btn btn-'+texto+' btn-block" '+actividad+'>'+ item.numero+'</button>';
 
                     }else{
                         if ( !bandera ) {
-                            if ( parseInt(item.estado_convencional) === 1 ) {
-                                if ( parseInt(item.disponibilidad) === 0 ) {
-                                    texto = 'info';
-                                    actividad = 'onclick="abrirPedido('+item.id+",'"+item.numero+"','"+item.estado_convencional+"'"+')"';
+                            if (DOM.ubicacion ==="1" || item.ubicacion==DOM.ubicacion){
+                                if ( parseInt(item.estado_convencional) === 1 ) {
+                                    if ( parseInt(item.disponibilidad) === 0) {
+                                        texto = 'info';
+                                        actividad = 'onclick="abrirPedido('+item.id+",'"+item.numero+"','"+item.estado_convencional+"'"+')"';
+                                    }
+                                    if ( parseInt(item.disponibilidad) === 1 ) {
+                                        texto = 'danger';
+                                        actividad = '';
+                                    }
                                 }
-                                if ( parseInt(item.disponibilidad) === 1 ) {
-                                    texto = 'danger';
-                                    actividad = '';
+        
+                                if ( parseInt(item.estado_convencional) === 2 ) {
+                                    if ( parseInt(item.espera) === 0 ) {
+                                        texto = 'dark';                                
+                                        actividad = 'onclick="abrirPedido('+item.id+",'"+item.numero+"','"+item.estado_convencional+"'"+')"';
+                                    } 
+        
+                                    if ( parseInt(item.espera) > 0 ) {
+                                        texto = 'warning';
+                                        actividad = 'onclick="abrirEspera('+item.id+",'"+item.numero+"','"+item.estado_convencional+"'"+')"';
+                                    }
+        
+                                    if ( parseInt(item.preparado) > 0 ) {
+                                        texto = 'success';
+                                        actividad = 'onclick="abrirEntrega('+item.id+",'"+item.numero+"','"+item.estado_convencional+"'"+')"';
+                                    }
+        
+                                    if ( parseInt(item.disponibilidad) === 1 ) {
+                                        texto = 'danger';
+                                        actividad = '';
+                                    }
                                 }
+                            html += '<button type="button" class="btn btn-'+texto+' btn-block" '+actividad+'>'+ item.numero+'</button>';
                             }
-    
-                            if ( parseInt(item.estado_convencional) === 2 ) {
-                                if ( parseInt(item.espera) === 0 ) {
-                                    texto = 'dark';                                
-                                    actividad = 'onclick="abrirPedido('+item.id+",'"+item.numero+"','"+item.estado_convencional+"'"+')"';
-                                } 
-    
-                                if ( parseInt(item.espera) > 0 ) {
-                                    texto = 'warning';
-                                    actividad = 'onclick="abrirEspera('+item.id+",'"+item.numero+"','"+item.estado_convencional+"'"+')"';
-                                }
-    
-                                if ( parseInt(item.preparado) > 0 ) {
-                                    texto = 'success';
-                                    actividad = 'onclick="abrirEntrega('+item.id+",'"+item.numero+"','"+item.estado_convencional+"'"+')"';
-                                }
-    
-                                if ( parseInt(item.disponibilidad) === 1 ) {
-                                    texto = 'danger';
-                                    actividad = '';
-                                }
-                            }
-                        }
-                        html += '<button type="button" class="btn btn-'+texto+' btn-block" '+actividad+'>'+ item.numero+'</button>';
-
+                        }                        
                     }
-
-
-                    
                 });
                 DOM.listado_mesas.html(html);                
             }else{
@@ -1350,7 +1370,7 @@ function listarPedidoEntrega(id_mesa){
                                 html += '&nbsp;&nbsp;';
                             }
                             if ( item.estado === "1" ) {
-                                html += '<button type="button" class="btn btn-info btn-xs" data-toggle="modal" data-target="#modal-editar-pedido" onclick="editar('+item.id+')" title="Cambiar cantidad de pedido"><i class="fas fa-pen"></i></button>';
+                                html += '<button type="button" class="btn btn-dark btn-xs" data-toggle="modal" data-target="#modal-editar-pedido" onclick="editar('+item.id+')" title="Cambiar cantidad de pedido"><i class="fas fa-pen"></i></button>';
                                 html += '&nbsp;&nbsp;';
                             }
                         html += '</td>';
@@ -1374,8 +1394,88 @@ function listarPedidoEntrega(id_mesa){
     }, funcion);
 }
 
+function consultar_mesa(){
+    if ( DOM.cboMesasConsultar.val() === null ) {
+        Validar.alert("warning","Debe seleccionar una mesa para consultar");
+        return 0;
+    }   
+
+    abrirDetalleMesa(DOM.cboMesasConsultar.val(),"Samuel");    
+}
+
+function abrirDetalleMesa(id_mesa,mesa){
+    DOM.codigo_mesa.val(id_mesa);
+    DOM.mesa.val(mesa);
+    //DOM.estado_convencional.val(estado_convencional);
+    //DOM.blkListarPedidos.find(".titulo").text(mesa.substring(0,1)+ mesa.toLowerCase().substring(1)+": Pedido en espera");
+    var funcion = function (resultado) {        
+        if (resultado.estado === 200) {
+            if ( resultado.datos.rpt === true ) {
+                var html = '';
+                $.each(resultado.datos.msj.pedidos, function(i,item){                    
+                    //html += item.estado === "4" ? '<tr style="background: red;">':'<tr>';
+                    switch (item.estado) {
+                        case "1":
+                            html += '<tr ><td style="background: yellow; display: flex;justify-content: center;align-items: center;font-size: 2rem"><i class="fas fa-pen"></i></td>';
+                            break; 
+                        case "2":
+                            html += '<tr><td style="background: blue;display: flex;justify-content: center;align-items: center;font-size: 2rem"><i class="fas fa-fire"></i></td>';
+                            break; 
+                        case "3":
+                            html += '<tr><td style="background: green;display: flex;justify-content: center;align-items: center;font-size: 2rem"><i class="fas fa-shopping-cart"></i></td>';
+                            break; 
+                        case "4":
+                            html += '<tr style="text-decoration:line-through;color:red"><td style="color:black;background: red; display: flex;justify-content: center;align-items: center;font-size: 2rem"><i class="fas fa-trash"></i></td>';
+                            break;                    
+                        case "6":
+                            html += '<tr style="text-decoration:line-through;color:green"><td style="color:white;background: black; display: flex;justify-content: center;align-items: center;font-size: 2rem"><i class="fas fa-print"></i></td>';
+                            break;                    
+                        default:
+                            html += '<tr><td>&nbsp&nbsp&nbsp&nbsp</td>'
+                            break;
+                    }
+                    
+                        html += '<td class="text-center">';
+                            html += '<div class="justify-content-between">';
+                                /* if ( parseInt(item.item) > 0 ){
+                                    html += '<small sytle="font-size:7px;">Plato '+item.item+'</small>';
+                                } */
+                                html += '<h5 sytle="font-size:12px;">'+item.producto+'</h5>';                                
+                                html += '<small sytle="font-size:7px;">'+item.nota+'</small>';
+                            html += '</div>';
+                        html += '</td>';
+                        html += '<td class="text-center">'+item.cantidad+'</td>';
+                        html += '<td class="text-center">S/. '+item.precio+'</td>';
+                        html += '<td class="text-center">S/. '+item.importe+'</td>';
+                        html += '<td class="text-center">';
+                        html += '</td>';
+                    html += '</tr>';
+                });
+                DOM.listado_pedido_mozo.html(html);
+                var importe = resultado.datos.msj.total == null ? '0.00' : resultado.datos.msj.total;
+                DOM.importe_espera_mozo.text("TOTAL: S/. "+importe);
+            }else{
+                Validar.alert("warning",resultado.datos.msj.errorInfo[2],2000);
+            }            
+        }
+    }
+
+    new Ajxur.Api({
+        modelo: "Pedido",
+        metodo: "listarPedidosCajero",
+        data_in : {
+            p_id_mesa : id_mesa
+        }
+    }, funcion);
+}
+
 function abrirPuntos(){
     bloque(6);
+}
+
+function abrirAcciones(){
+    bloque(7);
+    cargarComboMesasVacias();
 }
 
 function abrirPedido(id_mesa,mesa,estado_convencional){
@@ -1492,6 +1592,16 @@ function cerrarPedidoEspera(){
     bloque(1);
 }
 
+function cerrarOtrasAcciones(){
+    DOM.codigo_mesa.val("");
+    DOM.mesa.val("");
+    DOM.texto_documento.val("");
+    DOM.listado_pedido_mozo.empty();
+    DOM.cboMesasConsultar.val("");
+    DOM.importe_espera_mozo.html("");
+    bloque(1);
+}
+
 function guardarMesa(){
     if ( parseFloat(DOM.total_pedido_mesa.val().split(" ")[1]) === 0 ) {
         Validar.alert("warning","Debe tener al menos un pedido para guardar el pedido",2000);
@@ -1531,16 +1641,19 @@ function CerrarMesa(){
 
 }
 
-function cargarMesaLiberar(){
+function cargarComboMesas(){
      var funcion = function (resultado) {        
         if (resultado.estado === 200) {
             if (resultado.datos.rpt === true) {
                 var html = ""; 
                 html = '<option value="" disabled selected>Seleccionar mesa</option>';                               
                 $.each(resultado.datos.msj, function (i, item) { 
-                    html += '<option value="' + item.id + '">'+ item.numero + '</option>';
+                    if( DOM.sesion === "super" ||DOM.ubicacion ==="1" || item.ubicacion==DOM.ubicacion ){
+                        html += '<option value="' + item.id + '">'+ item.numero + '</option>';
+                    }
                 });
-                $("#mesas_liberar").html(html);                
+                DOM.cboMesasLiberar.html(html);
+                DOM.cboMesasConsultar.html(html);                
             }else{
                 Validar.alert("warning",resultado.datos.msj.errorInfo[2],2000);                
             }            
@@ -1550,14 +1663,14 @@ function cargarMesaLiberar(){
         modelo: "Mesa",
         metodo: "llenarCB"
     }, funcion);
-}   
+}
 
 function liberar_mesa(){
-    if ( $("#mesas_liberar").val() === null ) {
+    if ( DOM.cboMesasLiberar.val() === null ) {
         Validar.alert("warning","Debe seleccionar una mesa para liberar");
         return 0;
     }   
-    cambiarDisponibilidad(0,$("#mesas_liberar").val());
+    cambiarDisponibilidad(0,DOM.cboMesasLiberar.val());
     Validar.alert("warning","Se ha liberado correctamente",2000);
     $("#liberar_mesa").modal("hide");
 }
@@ -1578,5 +1691,58 @@ function cambiarDisponibilidad(estado, codigo_mesa){
             p_disponibilidad : estado,
             p_id : codigo_mesa 
         }
+    }, funcion);  
+}
+
+function cargarComboMesasVacias(){
+    var funcion = function (resultado) {        
+       if (resultado.estado === 200) {
+           if (resultado.datos.rpt === true) {
+               var html = ""; 
+               html = '<option value="" disabled selected>Seleccionar mesa</option>';                               
+               $.each(resultado.datos.msj, function (i, item) { 
+                   if( DOM.sesion === "super" ||DOM.ubicacion ==="1" || item.ubicacion==DOM.ubicacion ){
+                       html += '<option value="' + item.id + '">'+ item.numero + '</option>';
+                   }
+               });
+               DOM.cboMesasDestino.html(html);
+           }else{
+               Validar.alert("warning",resultado.datos.msj.errorInfo[2],2000);                
+           }            
+       }
+   }
+   new Ajxur.Api({
+       modelo: "Mesa",
+       metodo: "llenarCBVacias"
+   }, funcion);
+}    
+
+function mover_mesa(){
+    if ( DOM.cboMesasConsultar.val() === null ) {
+        Validar.alert("warning","Debe seleccionar una mesa origen para liberar");
+        return 0;
+    } 
+    if ( DOM.cboMesasDestino.val() === null ) {
+        Validar.alert("warning","Debe seleccionar una mesa destino para liberar");
+        return 0;
+    }      
+    moverMesa(DOM.cboMesasConsultar.val(),DOM.cboMesasDestino.val());
+    Validar.alert("warning","Se movió el pedido de la mesa correctamente",2000);
+    $("#blkcambiar_mesa").modal("hide");
+    cerrarOtrasAcciones();
+}
+
+function moverMesa(origen,destino){
+    var funcion = function (resultado) {        
+        if (resultado.estado === 200) {
+            if ( resultado.datos.rpt === false ){
+                Validar.alert("warning",resultado.datos.msj.errorInfo[2],2000);
+            }            
+        }
+    }
+    new Ajxur.Api({
+        modelo: "Mesa",
+        metodo: "moverMesa",
+        data_out : [origen,destino]
     }, funcion);  
 }

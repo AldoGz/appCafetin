@@ -173,6 +173,41 @@ class Pedido extends Conexion {
         }
     } 
 
+    public function listarPedidosCajero(){
+        try {
+            session_name("CAFETIN");
+            session_start();
+            $resultado["mesero"] = $_SESSION["cod_usuario"];
+
+            $sql = "SELECT 
+                    tp.id,
+                    pro.nombre as producto,
+                    tp.cantidad,
+                    tp.precio,
+                    tp.cantidad*tp.precio as importe,
+                    tp.estado,
+                    IF( tp.nota IS NULL, '',tp.nota) as nota,
+                    tp.item
+                    FROM toma_pedido tp 
+                    INNER JOIN pedido pe ON pe.id = tp.id_pedido
+                    INNER JOIN producto pro ON pro.id = tp.id_producto
+                    WHERE pe.id_mesa = :0 AND pe.estado = 1
+                    ORDER BY 1";
+            $resultado["pedidos"] = $this->consultarFilas($sql,[$this->getId_mesa()]);
+
+            $sql = "SELECT 
+                    SUM(tp.cantidad*tp.precio) as total 
+                    FROM toma_pedido tp 
+                    INNER JOIN pedido pe ON pe.id = tp.id_pedido 
+                    WHERE pe.id_mesa = :0 AND pe.estado = 1 AND tp.estado <> 4  AND tp.estado <> 6";
+            $resultado["total"] = $this->consultarValor($sql,[$this->getId_mesa()]);
+            return array("rpt"=>true,"msj"=>$resultado);
+        } catch (Exception $exc) {
+            return array("rpt"=>false,"msj"=>$exc);
+            throw $exc;
+        }
+    } 
+
     public function listarPedidoMeseroEntrega(){
         try {
             $sql = "SELECT 
@@ -956,6 +991,7 @@ class Pedido extends Conexion {
             $monto_descuento,
             $monto_amortizacion,
             $ticket,
+            $medio_pago,
             $producto,
             $cantidad_producto,
             $cantidad_puntos,
@@ -965,31 +1001,40 @@ class Pedido extends Conexion {
         ){
         $this->beginTransaction();
         try {
+            //BUSCAR EL PEDIDO
             $sql = "SELECT id FROM pedido WHERE id_mesa = :0 AND estado = 1";
             $id_pedido = intval($this->consultarValor($sql,[$this->getId_mesa()]));
 
-            $sql = "SELECT COUNT(*) FROM toma_pedido WHERE id_pedido = :0 AND estado = 3";// CONTAR FILAS
+            //CONTAR FILAS LISTAS PARA PAGO
+            $sql = "SELECT COUNT(*) FROM toma_pedido WHERE id_pedido = :0 AND estado = 3";
             $resultado = intval($this->consultarValor($sql,[$id_pedido]));
-            $toma_pedido = json_decode($json); /// ESTO NUMERO 
 
-            $json_tomo = json_decode($tomo); // DESCUENTO 
+            //CONTAR FILAS EN PEDIDO / COCINA / PENDIENTE DE ENTREGA
+            $sql = "SELECT COUNT(*) FROM toma_pedido WHERE id_pedido = :0 AND estado < 3";
+            $pendientes = intval($this->consultarValor($sql,[$id_pedido]));
 
+            $toma_pedido = json_decode($json); /// ARREGLO DE TOMA_PEDIDO
+            $json_tomo = json_decode($tomo); // ARREGLO DE DESCUENTOS
+
+            //ACTUALIZA DESCUENTO
             foreach ($toma_pedido as $key => $value) {
                 $campos_valores = [
                     "descuento"=>$json_tomo[$key]->descuento
                 ];             
                 $campos_valores_where = ["id"=>$value];
                 $this->update("toma_pedido", $campos_valores,$campos_valores_where); 
-            }
+            }            
             
-            if ( count($toma_pedido) == $resultado ) {
+            //SI total de toma_pedido  IGUAL a total para facturar  Y pendientes = 0
+            if ( (count($toma_pedido) == $resultado ) &&  ($pendientes==0) ) {
+                //ACTUALIZA ESTADO DE PEDIDO
                 $campos_valores = [
                     "estado"=>2
                 ];             
                 $campos_valores_where = ["id"=>$id_pedido];
                 $this->update("pedido", $campos_valores,$campos_valores_where);   
 
-                $sql = "SELECT * FROM toma_pedido WHERE id_pedido = :0 AND estado < 3";
+                /* $sql = "SELECT * FROM toma_pedido WHERE id_pedido = :0 AND estado < 3";
                 $sin_facturacion = $this->consultarFilas($sql,[$id_pedido]);
 
                 for ($i=0; $i < count($sin_facturacion) ; $i++) { 
@@ -1002,8 +1047,9 @@ class Pedido extends Conexion {
                         "id"=>$item["id"]
                     ];
                     $this->update("toma_pedido", $campos_valores,$campos_valores_where);
-                }
+                } */
 
+                //ACTUALIZA MESA
                 $campos_valores = [
                     "estado_convencional"=>1
                 ];             
@@ -1012,9 +1058,6 @@ class Pedido extends Conexion {
                 ];
                 $this->update("mesa", $campos_valores,$campos_valores_where);
             }
-
-
-
 
             $num_correlativo = intval($correlativo);
             $new_correlativo = $num_correlativo+1;
@@ -1031,8 +1074,9 @@ class Pedido extends Conexion {
                 "usuario"=>$usuario,
                 "monto"=>$monto,
                 "monto_descuento"=>$monto_descuento,
-                "monto_amotizacion"=>$monto_amortizacion,
+                "monto_amortizacion"=>$monto_amortizacion,
                 "puntos"=>intval($monto_amortizacion),
+                "id_medio_pago"=>($medio_pago),
                 "ticket"=>$ticket,
                 "producto"=>$producto,
                 "cantidad_producto"=>$cantidad_producto
@@ -1145,20 +1189,24 @@ class Pedido extends Conexion {
         }
     }
 
-    public function reportePago($tipo,$fecha_inicio,$fecha_fin){        
+    public function reportePago($tipo,$fecha_inicio,$fecha_fin){       
         try {
-            $sql = "";
+            $sql = "";            
             if ( $tipo == "1" ) {
                 $sql .= "SELECT 
                             fa.id,
                             CONCAT(tc.abreviatura,'-',CONCAT(REPEAT('0', 3-LENGTH(fa.numero)), fa.numero),'-',CONCAT(REPEAT('0', 7-LENGTH(fa.correlativo)), fa.correlativo)) as comprobante,
                             pe.fecha_registro as fecha_registro_pedido,
                             fa.fecha_registro as fecha_registro_facturacion,
-                            fa.monto_amotizacion as total
+                            fa.monto as subtotal,
+                            fa.monto_descuento as descuentos,
+                            fa.ticket as ticket,
+                            fa.monto_amortizacion as total
                         FROM facturacion fa
                         INNER JOIN tipo_comprobante tc ON tc.id = fa.id_tipo_comprobante
                         INNER JOIN pedido pe ON pe.id = fa.id_pedido
-                        WHERE DATE_FORMAT(fa.fecha_registro, '%Y-%m-%d') >= :0 AND DATE_FORMAT(fa.fecha_registro, '%Y-%m-%d') <= :1";    
+                        WHERE DATE_FORMAT(fa.fecha_registro, '%Y-%m-%d %H:%i:%S') >= :0 AND DATE_FORMAT(fa.fecha_registro, '%Y-%m-%d %H:%i:%S') <= :1
+                        ORDER BY 4 DESC";    
             }else{
                 $sql .= "SELECT 
                             tp.id_producto as id_producto,
@@ -1168,7 +1216,7 @@ class Pedido extends Conexion {
                         FROM facturacion fac 
                         INNER JOIN toma_pedido tp on tp.id_pedido=fac.id_pedido 
                         INNER JOIN producto pr on tp.id_producto=pr.id 
-                        WHERE DATE_FORMAT(fac.fecha_registro, '%Y-%m-%d') >= :0 AND DATE_FORMAT(fac.fecha_registro, '%Y-%m-%d') <= :1
+                        WHERE DATE_FORMAT(fac.fecha_registro, '%Y-%m-%d %H:%i:%S') >= :0 AND DATE_FORMAT(fac.fecha_registro, '%Y-%m-%d %H:%i:%S') <= :1 AND tp.estado in ('','6')
                         GROUP BY pr.nombre";
             }
             $resultado = $this->consultarFilas($sql,[$fecha_inicio,$fecha_fin]); 
@@ -1186,6 +1234,8 @@ class Pedido extends Conexion {
                         tp.cantidad,
                         tp.precio,
                         tp.cantidad*tp.precio as importe,
+                        tp.descuento as descuento,
+                        tp.cantidad*tp.precio-tp.descuento as total,
                         IF(tp.nota IS NULL,'',tp.nota) as nota
                     FROM toma_pedido tp
                     INNER JOIN producto pro ON pro.id = tp.id_producto
@@ -1197,6 +1247,18 @@ class Pedido extends Conexion {
                     IF(documento='' AND razon_social='',usuario, CONCAT('(',documento,') ',razon_social)) as etiqueta 
                     FROM facturacion WHERE id = :0";
             $resultado["etiqueta"] = $this->consultarValor($sql,[$this->getId()]);
+
+            $sql = "SELECT 
+                    fecha_registro as fecha 
+                    FROM facturacion WHERE id = :0";
+            $resultado["fecha"] = $this->consultarValor($sql,[$this->getId()]);
+
+            $sql = "SELECT 
+                    me.numero as mesa
+                    FROM facturacion fa 
+                    INNER join pedido pe on fa.id_pedido=pe.id 
+                    INNER JOIN mesa me on pe.id_mesa=me.id where fa.id= :0";
+            $resultado["mesa"] = $this->consultarValor($sql,[$this->getId()]);
             return array("rpt"=>true,"msj"=>$resultado);
         } catch (Exception $exc) {
             return array("rpt"=>false,"msj"=>$exc);
@@ -1229,7 +1291,7 @@ class Pedido extends Conexion {
 
 
 
-    public function darBaja($id,$estado) {
+    public function darBaja($id,$estado,$mesa) {
         $this->beginTransaction();
         try {
             $campos_valores = [                
@@ -1241,15 +1303,21 @@ class Pedido extends Conexion {
             $sql = "SELECT id_pedido FROM toma_pedido WHERE id = :0";
             $id_pedido = $this->consultarValor($sql,[$id]); 
 
-            $sql = "SELECT COUNT(id_pedido) FROM toma_pedido WHERE id_pedido = :0 AND estado = 1";
+            $sql = "SELECT COUNT(id_pedido) FROM toma_pedido WHERE id_pedido = :0 AND estado <> 4 AND estado <> 6";
             $cantidad = $this->consultarValor($sql,[$id_pedido]);
 
-            if( intval($cantidad) <= 1 ){
+            if( intval($cantidad) < 1 ){
                 $campos_valores = [                
                     "estado"=>3
                 ];
                 $campos_valores_where = ["id"=>$id_pedido];
                 $this->update("pedido", $campos_valores,$campos_valores_where);
+
+                $campos_valores = [                
+                    "estado_convencional"=>1
+                ];
+                $campos_valores_where = ["id"=>$mesa];
+                $this->update("mesa", $campos_valores,$campos_valores_where);
             }           
             $this->commit();
             return array("rpt"=>true,"msj"=>"Se anulado correctamente");

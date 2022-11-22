@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <?php require_once '../build/code/metas.vista.php'; ?>
-    <title>CAJERO</title>
+    <title>..::CAJERO- PeruAndino ::..</title>
     <?php require_once '../build/code/estilos.vista.php'; ?>
 </head>
 <body>
@@ -38,17 +38,23 @@
                                 <label class="form-check-label" for="rdpv">Productos vendidos</label>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="form-group">
                                 <label for="fecha_inicio">Fecha inicio:</label>
-                                <input type="date" class="form-control" id="fecha_inicio">
+                                <input type="date" class="form-control" id="fecha_inicio" disabled>
                                 
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="form-group">
                                 <label for="fecha_fin">Fecha fin:</label>
-                                <input type="date" class="form-control" id="fecha_fin">                                        
+                                <input type="date" class="form-control" id="fecha_fin" disabled>                                        
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label for="fecha_fin">Seleccione un Turno:</label>
+                                <select class="form-control" id="cboTurno" style="text-align-last:center;"></select>
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -63,11 +69,55 @@
                         </div>
                     </div>
                     <div id="listado-reporte"></div>                   
-
+                    <button class="btn btn-lg btn-info btn-xs" onclick="tableToExcel('tb_export')">Exportar Tabla a Excel </button>
                 </div>
             </div>
 
-            
+            <div class="card" style="height:100%;" id="blkListarPedidos">
+                    <div class="card-header">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5 class="titulo"></h5> 
+                            </div>
+                            <div class="col-md-2" id="Pago_parcial">
+                            
+                            </div>
+                            <div class="col-md-4">
+                                <h4 id="importe_espera" style="text-align-last:right; color:red"></h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body" style="height: 250px;overflow-x:hidden;overflow-y:scroll;white-space:nowrap">                        
+                        <div class="col-md-12">
+                            <table class="table table-stripe">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">*</th>
+                                        <th class="text-center">Producto</th>
+                                        <th class="text-center">Cantidad</th>
+                                        <th class="text-center">Precio</th>
+                                        <th class="text-center">Importe</th>
+                                        
+                                    </tr>
+                                </thead>
+                                <tbody id="listado_pedido_espera"></tbody>
+                            </table>                            
+                        </div>
+                                               
+                    </div>
+                    <div class="card-footer">
+                        <div class="col-md-12">
+                            <div class="row justify-content-md-center">
+                                <!-- <div class="col-md-3" id="btn-pedir-mesero">
+                                    <button type="button" class="btn btn-success btn-block" onclick="abrirMasPedido()"><i class="fas fa-plus"></i> Pedidos</button>
+                                </div> -->
+                                <div class="col-md-3">
+                                <button type="button" class="btn btn-danger btn-block" id="CerrarPedidosListado"><i class="fas fa-sign-out-alt"></i> Salir</button>
+                                </div>
+                            </div>
+                        </div> 
+                    </div>
+                </div>
             
             <!-- PAGADO -->
             <div class="card" style="height: 100%;" id="blkPagarMesa">
@@ -95,7 +145,7 @@
 
                         <div class="col-md-3">
                             Documento
-                            <input type="text" class="form-control" id="documento">
+                            <input type="text" class="form-control" id="documento" disabled>
                         </div>
                         <div class="col-md-6">
                             Nombres y Apellidos / Razón social
@@ -108,21 +158,23 @@
                         <div class="col-md-12" id="blkDireccion">
                             Dirección
                             <input type="text" class="form-control" id="direccion" disabled>
-                        </div>
-                        
-                        <div class="col-md-4">
+                        </div>                        
+                        <div class="col-md-3">
                             Monto Total
                             <input type="text" class="form-control" id="monto_pagado" disabled>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             Monto descuento
                             <input type="text" class="form-control" id="monto_descuento" disabled>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             Monto Amortización
                             <input type="text" class="form-control" id="monto_amortizacion" disabled>
                         </div>
-
+                        <div class="col-md-3">
+                                MedioPago
+                                <select class="form-control" id="cboMedioPago"></select>
+                            </div>
                         <div class="col-md-7" style="margin-top:30px;height: 300px;overflow-x:hidden;overflow-y:scroll;white-space:nowrap">
                             <div class="row">
                                 <div class="col-md-7">
@@ -165,19 +217,20 @@
                                     <table class="table table-bordered">
                                         <thead>
                                             <tr>
-                                                <th class="text-center" scope="col">DNI/RUC</th>
-                                                <th class="text-center" scope="col">Razón social</th>
-                                                <th class="text-center" scope="col">Puntos</th>
+                                                <th class="text-center" scope="col">*</th>
+                                                <th class="text-center" scope="col">DOC</th>
+                                                <th class="text-center" scope="col">FECHA</th>
+                                                <th class="text-center" scope="col">MONTO</th>
                                             </tr>
                                         </thead>
                                         <tbody id="listado-pedidos-puntos">
                                             <tr>
-                                                <td colspan="3" class="text-center">Sin resultados</td>
+                                                <td colspan="4" class="text-center">Sin resultados</td>
                                             </tr>
                                         </tbody>
                                     </table>                                        
                                 </div>
-                                <div class="col-md-12">
+                                <!-- <div class="col-md-12">
                                     <table class="table table-bordered">
                                         <thead>
                                             <tr>
@@ -188,7 +241,7 @@
                                         </thead>
                                         <tbody id="listado-pedidos-puntos-promocion"></tbody>
                                     </table>                                        
-                                </div> 
+                                </div> --> 
                             </div>
                         </div>
 
@@ -214,12 +267,13 @@
             <div class="card text-center" style="height: 100%;">
                 <div class="card-body  iscroll-mesas"> 
                     <input type="hidden" class="form-control" id="codigo_mesa" placeholder="ID MESA"> 
+                    <input type="hidden" class="form-control" id="mesa" placeholder="LA MESA"> 
+                    <input type="hidden" class="form-control" id="estado_convencional" placeholder="EC"> 
                     <button type="button" class="btn btn-warning btn-block" onclick="abrirReporte()">REPORTE</button>   
-                    <hr>                                           
-                    <div id="listado-mesas"></div>
                     <hr>
                     <button type="button" class="btn btn-primary btn-block" onclick="cerrarSesion()"><i class="fas fa-power-off"></i></button>
-                    
+                    <hr>                                           
+                    <div id="listado-mesas"></div>
                     
                 </div>
             </div>
@@ -259,6 +313,10 @@
                     <div class="modal-body">
                         <div class="col-md-12" style="margin:10px;color:red;">
                             <div id="texto-usuario"></div>
+                            <div class="row">
+                            <div class="col-md-8" id="mesa-usuario"></div>
+                            <div class="col-md-4" id="fecha-usuario"></div>
+                            </div>
                         </div>
                         <div class="col-md-12" style="margin-top:10px;">
                             <table class="table table-bordered">
@@ -267,7 +325,10 @@
                                         <th class="text-center" scope="col">PEDIDO</th>
                                         <th class="text-center" scope="col">PRECIO</th>
                                         <th class="text-center" scope="col">CANTIDAD</th>                                        
-                                        <th class="text-center" scope="col">IMPORTE</th>
+                                        <th class="text-center" scope="col">SUBTOTAL</th>
+                                        <th class="text-center" scope="col">DESCUENTO</th>
+                                        <th class="text-center" scope="col">TOTAL</th>
+                                        <!-- <th class="text-center" scope="col">NOTA</th> -->
                                     </tr>
                                 </thead>
                                 <tbody id="listado-ver"></tbody>

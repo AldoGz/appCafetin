@@ -70,12 +70,15 @@
                                                                         <div class="form-group form-float">
                                                                             <div class="form-line">
                                                                                 <input type="text" id="strNumero" name="strNumero" class="form-control">
-                                                                                <label class="form-label">Número de mesa</label>
+                                                                                <label class="form-label">Nombre de la mesa</label>
                                                                             </div>
                                                                         </div>
                                                                     </div>
+                                                                    <div class="col-sm-3"> <h5>Ubicación</h5>
+                                                                        <select class="form-control show-tick" id="intUbicacion"></select>
+                                                                    </div>
                                                                 </div>
-                                                            </div>
+                                                            </div>                                                            
                                                         </div>                                                          .
                                                     </div>
                                                     <div class="modal-footer">

@@ -4,7 +4,7 @@
 <!-- Google Fonts -->
 <link href="../../css/fonts/font-roboto.css" rel="stylesheet" type="text/css">
 <link href="../../css/fonts/font-materialize.css" rel="stylesheet" type="text/css">
-
+<link rel="stylesheet" href="../../../lib/fontawesome/css/all.css">
 
 <!-- Bootstrap Core Css -->
 <link href="../../plugins/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css">
