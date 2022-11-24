@@ -1340,7 +1340,7 @@ function abrirEntrega(id_mesa,mesa,estado_convencional){
     DOM.codigo_mesa.val(id_mesa);
     DOM.mesa.val(mesa);
     DOM.estado_convencional.val(estado_convencional);
-    DOM.blkEntregar.find(".titulo").text(mesa.substring(0,1)+ mesa.toLowerCase().substring(1)+": Pedido entrega o espera");
+    DOM.blkEntregar.find(".titulo").text(mesa.substring(0,1)+ mesa.toLowerCase().substring(1)+": Pedido en entrega o espera");
     listarPedidoEntrega(id_mesa);
 }
 
@@ -1353,9 +1353,9 @@ function listarPedidoEntrega(id_mesa){
                     html += item.estado === "4" ? '<tr style="background: red;">':'<tr>';                      
                         html += '<td class="text-center">';
                             html += '<div class="justify-content-between">';
-                                if ( parseInt(item.item) > 0 ){
-                                    html += '<small sytle="font-size:7px;">Plato '+item.item+'</small>';
-                                } 
+                                // if ( parseInt(item.item) > 0 ){
+                                //     html += '<small sytle="font-size:7px;">Plato '+item.item+'</small>';
+                                // } 
                                 html += '<h5 sytle="font-size:12px;">'+item.producto+'</h5>';  
                                 html += '<small sytle="font-size:7px;">'+item.nota+'</small>';
                             html += '</div>';
@@ -1370,7 +1370,7 @@ function listarPedidoEntrega(id_mesa){
                                 html += '&nbsp;&nbsp;';
                             }
                             if ( item.estado === "1" ) {
-                                html += '<button type="button" class="btn btn-dark btn-xs" data-toggle="modal" data-target="#modal-editar-pedido" onclick="editar('+item.id+')" title="Cambiar cantidad de pedido"><i class="fas fa-pen"></i></button>';
+                                html += '<button type="button" class="btn btn-warning btn-xs" data-toggle="modal" data-target="#modal-editar-pedido" onclick="editar('+item.id+')" title="Cambiar cantidad de pedido"><i class="fas fa-pen"></i></button>';
                                 html += '&nbsp;&nbsp;';
                             }
                         html += '</td>';
@@ -1505,9 +1505,9 @@ function listarPedidoEspera(id_mesa){
                     html += item.estado === "4" ? '<tr style="background: red;">':'<tr>';                      
                         html += '<td class="text-center">';
                             html += '<div class="justify-content-between">';
-                                if ( parseInt(item.item) > 0 ){
-                                    html += '<small sytle="font-size:7px;">Plato '+item.item+'</small>';
-                                }
+                                // if ( parseInt(item.item) > 0 ){
+                                //     html += '<small sytle="font-size:7px;">Plato '+item.item+'</small>';
+                                // }
                                 html += '<h5 sytle="font-size:12px;">'+item.producto+'</h5>';                                
                                 html += '<small sytle="font-size:7px;">'+item.nota+'</small>';
                             html += '</div>';
@@ -1518,7 +1518,7 @@ function listarPedidoEspera(id_mesa){
                         html += '<td class="text-center">';
                             if ( item.estado === "1" ) {
                                 if( DOM.sesion != "super"){
-                                    html += '<button type="button" class="btn btn-info btn-xs" data-toggle="modal" data-target="#modal-editar-pedido" onclick="editar('+item.id+')" title="Cambiar cantidad de pedido"><i class="fas fa-pen"></i></button>';
+                                    html += '<button type="button" class="btn btn-warning btn-xs" data-toggle="modal" data-target="#modal-editar-pedido" onclick="editar('+item.id+')" title="Cambiar cantidad de pedido"><i class="fas fa-pen"></i></button>';
                                     html += '&nbsp;&nbsp;';
                                 }
                                 

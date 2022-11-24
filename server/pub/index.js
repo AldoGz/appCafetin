@@ -181,7 +181,7 @@ function iniciarMesa(item,detalle){
             html += '<div style="margin: 20px;color: white;">';
                 /*CABECERA*/
                 html += '<div class="d-flex justify-content-between align-items-center" style="justify-content: center;">';
-                    html += item.mesa;
+                    html += '<span style="font-size: 20px;font: oblique bold cursive;">'+item.mesa+'</span>';
                     html += '<h5 id="cronometro'+item.id_mesa+'">';
                         html += '<span class="badge badge-success badge-pill">';                        
                             html += '<min id="cron01-'+item.id_mesa+'">--:--</min>';                            
@@ -196,14 +196,14 @@ function iniciarMesa(item,detalle){
                 html += '<div id="cdetalle-pedido'+item.id_mesa+'">';
                     $.each(item.children,function(key,value){                        
                         html += '<div class="btn btn-default btn-lg btn-block alert" role="alert" style="height: 68px;" onclick="cambiarEstado('+value.id+","+item.id_mesa+')">';
-                            html += '<p class="alert-heading" style="font: oblique bold 75% cursive;color: white;">'+value.cantidad+' '+value.producto+'</p>';
-                            html += '<p style="font: oblique bold 45% cursive;color: white;">'+value.nota+ '</p>';
+                            html += '<h5 class="alert-heading" style="font: oblique bold 75% cursive;color: white;font-size: 30px;">'+value.cantidad+' '+value.producto+'</h5>';
+                            html += '<p style="font: oblique bold 45% cursive;color: white; white;font-size: 20px;">'+value.nota+ '</p>';
                         html += '</div>';                          
                     });
                 html += '</div>';  
                 /*CUERPO*/
                 /*PIE*/
-                html += '<p><small>'+item.empleado+'</small></p>';                                            
+                html += '<p style="margin-top:40px;font-size: 20px;"><small>'+item.empleado+'</small></p>';                                            
                 /*PIE*/
             html += '</div>';
         html += '</div>';
@@ -218,8 +218,8 @@ function tomaPedido(tabla,data){
         $.each(data[i].children,function(key,value){
             if ( referencia == value.id_mesa ) {                                
                 html += '<div class="btn btn-default btn-lg btn-block alert" role="alert" style="height: 68px;color: white;" onclick="cambiarEstado('+value.id+","+value.id_mesa+')">';                     
-                    html += '<h5 class="alert-heading" style="font: oblique bold 75% cursive;color: white;">'+value.cantidad+' '+value.producto+'</h5>';
-                    html += '<p style="font: oblique bold 45% cursive;color: white;">'+value.nota+'</p>';
+                    html += '<h5 class="alert-heading" style="font: oblique bold 75% cursive;color: white;font-size: 30px;">'+value.cantidad+' '+value.producto+'</h5>';
+                    html += '<p style="font: oblique bold 45% cursive;color: white;font-size: 20px;">'+value.nota+'</p>';
                 html += '</div>'; 
             }                                 
         });

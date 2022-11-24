@@ -1009,24 +1009,65 @@ class Pedido extends Conexion {
             $sql = "SELECT COUNT(*) FROM toma_pedido WHERE id_pedido = :0 AND estado = 3";
             $resultado = intval($this->consultarValor($sql,[$id_pedido]));
 
-            //CONTAR FILAS EN PEDIDO / COCINA / PENDIENTE DE ENTREGA
-            $sql = "SELECT COUNT(*) FROM toma_pedido WHERE id_pedido = :0 AND estado < 3";
-            $pendientes = intval($this->consultarValor($sql,[$id_pedido]));
-
             $toma_pedido = json_decode($json); /// ARREGLO DE TOMA_PEDIDO
             $json_tomo = json_decode($tomo); // ARREGLO DE DESCUENTOS
 
+            $faltaFacturar=false;
+
             //ACTUALIZA DESCUENTO
             foreach ($toma_pedido as $key => $value) {
+                $sql = "SELECT cantidad FROM toma_pedido WHERE id = :0";
+                $resultado = intval($this->consultarValor($sql,[$value]));
+
+                if  ($resultado!=$json_tomo[$key]->cantidad){
+                //     $campos_valores = [
+                //         "descuento"=>$json_tomo[$key]->descuento
+                //     ];             
+                //     $campos_valores_where = ["id"=>$value];
+                //     $this->update("toma_pedido", $campos_valores,$campos_valores_where); 
+                // }
+                // else{
+                    $sql = "SELECT * FROM toma_pedido WHERE id = :0 ORDER BY 1";
+                    $antiguo = $this->consultarFila($sql,[$value]);
+                    
+                    $campos_valores = [
+                        "id_pedido" =>$antiguo["id_pedido"],                        
+                        "id_producto"=>$antiguo["id_producto"],
+                        "cantidad"=>$antiguo["cantidad"]-$json_tomo[$key]->cantidad,
+                        "precio"=>$antiguo["precio"],
+                        "estado"=>3,
+                        "nota"=>$antiguo["nota"],
+                        "kpi"=>$antiguo["kpi"],
+                        "observaciones"=>$antiguo["observaciones"],
+                        "item"=>$antiguo["item"],
+                        "timbre"=>$antiguo["timbre"],
+                        "fecha_registro"=>$antiguo["fecha_registro"]
+                    ];
+                    $this->insert("toma_pedido", $campos_valores);
+
+                    $campos_valores = [
+                        "cantidad"=>$json_tomo[$key]->cantidad,
+                    ];             
+                    $campos_valores_where = ["id"=>$value];
+                    $this->update("toma_pedido", $campos_valores,$campos_valores_where);   
+                    
+                    $faltaFacturar=true;
+                }
+                
                 $campos_valores = [
                     "descuento"=>$json_tomo[$key]->descuento
                 ];             
                 $campos_valores_where = ["id"=>$value];
                 $this->update("toma_pedido", $campos_valores,$campos_valores_where); 
+
             }            
             
+            //CONTAR FILAS EN PEDIDO / COCINA / PENDIENTE DE ENTREGA
+            $sql = "SELECT COUNT(*) FROM toma_pedido WHERE id_pedido = :0 AND estado < 3";
+            $pendientes = intval($this->consultarValor($sql,[$id_pedido]));
+
             //SI total de toma_pedido  IGUAL a total para facturar  Y pendientes = 0
-            if ( (count($toma_pedido) == $resultado ) &&  ($pendientes==0) ) {
+            if ( (count($toma_pedido) == $resultado ) &&  ($pendientes==0) && $faltaFacturar) {
                 //ACTUALIZA ESTADO DE PEDIDO
                 $campos_valores = [
                     "estado"=>2
@@ -1201,10 +1242,12 @@ class Pedido extends Conexion {
                             fa.monto as subtotal,
                             fa.monto_descuento as descuentos,
                             fa.ticket as ticket,
-                            fa.monto_amortizacion as total
+                            fa.monto_amortizacion as total,
+                            me.descripcion as medioPago
                         FROM facturacion fa
                         INNER JOIN tipo_comprobante tc ON tc.id = fa.id_tipo_comprobante
                         INNER JOIN pedido pe ON pe.id = fa.id_pedido
+                        INNER JOIN medios_pago me on me.id=fa.Id_medio_pago
                         WHERE DATE_FORMAT(fa.fecha_registro, '%Y-%m-%d %H:%i:%S') >= :0 AND DATE_FORMAT(fa.fecha_registro, '%Y-%m-%d %H:%i:%S') <= :1
                         ORDER BY 4 DESC";    
             }else{

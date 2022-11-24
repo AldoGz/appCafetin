@@ -231,9 +231,10 @@ function abrirEspera(id_mesa,mesa,estado_convencional){
 
 function abrirFacturacion(id_mesa,mesa){
     cargarMediosPago();
-    DOM.titulo.text("Facturación para "+(mesa.substring(0,1) === 'M' ? 'la ' :'el ')+mesa.toLowerCase());
-    DOM.codigo_mesa.val(id_mesa);
+    DOM.titulo.text("Facturación para "+((mesa.substring(0,1) === 'M' ||mesa.substring(0,1) === 'B')  ? 'la ' :'el ')+mesa.toUpperCase());
+    DOM.codigo_mesa.val(id_mesa);  
     bloque(2);
+    
    
 
     var funcion = function (resultado) {        
@@ -251,11 +252,13 @@ function abrirFacturacion(id_mesa,mesa){
                                 html += '<small>'+item.nota+'</small>';
                             html += '</div>';
                         html += '</td>';
-                        html += '<td class="text-center">'+item.cantidad+'</td>';
+                        
+                        html += '<td class="text-center"><input type="number" name="inputNumber" value="'+item.cantidad+'" min="1" max="'+item.cantidad+'"></td>';
+                        
                         html += '<td class="text-center">S/. '+item.precio+'</td>';
                         html += '<td class="text-center">S/. '+item.descuento+'</td>';
                         
-                        html += '<td class="text-center">S/. '+item.importe+'</td>';
+                        html += '<td class="text-center" name="itemImporte">S/. '+item.importe+'</td>';
                     html += '</tr>';  
                     DOM.array.push(item.id);
                 });
@@ -418,7 +421,7 @@ function GuardarFacturacion(){
                 DOM.cantidad_puntos.val("");
                 DOM.ticket.val("");
                 DOM.text_descuento.val("");
-                DOM.listado_pedidos_puntos.html('<tr><td colspan="3" class="text-center">Sin resultados</td></tr>');
+                DOM.listado_pedidos_puntos.html('<tr><td colspan="4" class="text-center">Sin resultados</td></tr>');
                 DOM.array.splice(0,DOM.array.length);                
                 Validar.alert("warning",resultado.datos.msj,2000);                    
                 //window.open('../documento/index.php','_blank');
@@ -432,7 +435,7 @@ function GuardarFacturacion(){
     let detallePdo = [];
     $.each(DOM.listado_apagar.find("tr"),function(i,item){
         let obj = {
-            "cantidad" : parseInt($(this).find("td").eq(2).html()),
+            "cantidad" : parseInt($(this).find("td").eq(2).find("input").val()),
             "producto" : $(this).find("td").eq(1).find("h5").eq(0).html(),
             "precio" : $(this).find("td").eq(3).html().split(" ")[1],
             "descuento" : $(this).find("td").eq(4).html().split(" ")[1],
@@ -443,7 +446,7 @@ function GuardarFacturacion(){
         //var dataset = this.dataset.id;
         //if ( this.dataset.id !== undefined ) {
             producto += $(this).find("td").eq(1).find("h5").eq(0).html();
-            cantidad += parseInt($(this).find("td").eq(2).html());
+            cantidad += parseInt($(this).find("td").eq(2).find("input").val());
         //}        
     });
 
@@ -491,6 +494,38 @@ function setEventos(){
         }
     });
 
+    DOM.listado_apagar.on("change","input[name=inputNumber]", function(){
+        var fila = this.parentElement.parentElement;
+        var cantidad=$(fila).find("td").eq(2).find("input").val();
+        var precio=$(fila).find("td").eq(3).html().split(" ")[1];
+        var subtotal=cantidad*precio;
+        $(fila).find("td").eq(4).html('S/. '+parseFloat((DOM.text_descuento.val().split(" ")[0])/100*subtotal).toFixed(2));
+        var descuento=$(fila).find("td").eq(4).html().split(" ")[1];
+        var newImporte=cantidad*precio-descuento;                         
+        $(fila).find("td").eq(5).html('S/. '+parseFloat(newImporte).toFixed(2));
+
+        DOM.array.splice(0,DOM.array.length);
+        var nodo = this.parentElement.parentElement.parentElement;
+        var subtotal2 = 0;
+        var descuentos = 0;
+
+        $.each($(nodo).find("tr"), function(i,item){
+            var input = $(this).find("td").eq(0);           
+
+            if ( input.find("input")[0].checked ) {
+                //console.log($(this).find("td").eq(5));
+                subtotal2 += parseFloat($(this).find("td").eq(3).html().split(" ")[1])*parseFloat($(this).find("td").eq(2).find("input").val());
+                descuentos += parseFloat($(this).find("td").eq(4).html().split(" ")[1]);
+                //total += parseFloat($(this).find("td").eq(5).html().split(" ")[1]);
+                DOM.array.push(input.find("input")[0].value);
+            }            
+        });
+        DOM.monto.val('S/. '+parseFloat(subtotal2).toFixed(2));
+        DOM.monto_descuento.val('S/. '+parseFloat(descuentos).toFixed(2));
+        DOM.monto_amortizacion.val('S/. '+parseFloat(subtotal2-descuentos).toFixed(2)); 
+
+    });
+
     DOM.listado_apagar.on("change","input[name=id_toma_pedido]", function(){
         DOM.array.splice(0,DOM.array.length);
         var nodo = this.parentElement.parentElement.parentElement;
@@ -502,7 +537,8 @@ function setEventos(){
             var input = $(this).find("td").eq(0);           
 
             if ( input.find("input")[0].checked ) {
-                subtotal += parseFloat($(this).find("td").eq(5).html().split(" ")[1]);
+                //console.log($(this).find("td").eq(5));
+                subtotal += parseFloat($(this).find("td").eq(3).html().split(" ")[1])*parseFloat($(this).find("td").eq(2).find("input").val());
                 descuentos += parseFloat($(this).find("td").eq(4).html().split(" ")[1]);
                 //total += parseFloat($(this).find("td").eq(5).html().split(" ")[1]);
                 DOM.array.push(input.find("input")[0].value);
@@ -543,6 +579,10 @@ function setEventos(){
             Validar.alert("warning","Debe ingresar el número de DNI",2000);
             return 0;
         }
+        if ( DOM.array.length == 0) {
+            Validar.alert("warning","Debe seleccionar detalle de Pedido",2000);
+            return 0;
+        }
 
         $("#confirmar_pago").modal("show");        
     });
@@ -563,7 +603,7 @@ function setEventos(){
                         setTimeout(function(){ 
                             DOM.text_descuento.val(datos.porcentaje+" %");
                             $("#cargando").modal('hide');    
-                        }, 2000);  
+                        }, 100);  
                     }                                          
                 }else{
                     Validar.alert("warning",resultado.datos.msj.errorInfo[2],2000);
@@ -604,13 +644,13 @@ function setEventos(){
                         var datos = resultado.datos.msj;
                         setTimeout(function(){ 
                             DOM.razon_social.val(datos.documento.informacion.razonSocial); 
-                            var direccion = datos.documento.informacion.direccion === "-" ?
+                            var direccion = datos.documento.informacion.direccion === null ?
                                 "SIN DOMICILIO FISCAL" : 
                                 datos.documento.informacion.direccion;                                
                             $("#direccion").val(direccion);
 
                             var html = '';
-                            if ( !datos.puntos  ) {
+                            if ( datos.puntos.length ===0 ) {
                                 html += '<tr>';
                                     html += '<td colspan="4" class="text-center">Sin resultados</td>';
                                 html += '</tr>'; 
@@ -627,7 +667,7 @@ function setEventos(){
 
                             DOM.listado_pedidos_puntos.html(html);
                             $("#cargando").modal('hide');    
-                        }, 2000);  
+                        }, 100);  
                                                                   
                     }else{
                         Validar.alert("warning",resultado.datos.msj.errorInfo[2],2000);
@@ -653,22 +693,24 @@ function setEventos(){
                             DOM.razon_social.val(datos.documento.informacion.nombres+" "+datos.documento.informacion.apellidoPaterno+" "+datos.documento.informacion.apellidoMaterno);  
 
                             var html = '';
-                            if ( !datos.puntos) {
+                            if ( datos.puntos.length ===0) {
                                 html += '<tr>';
                                     html += '<td colspan="4" class="text-center">Sin resultados</td>';
                                 html += '</tr>'; 
                             }else{
+                                $.each(datos.puntos, function(i,item){
                                 html += '<tr>';
                                     html += '<td class="text-center"><button type="button" class="btn btn-info btn-xs" data-toggle="modal" data-target="#ver" onclick="abrirDetalle('+datos.puntos.id+')" title="Ver detalle"><i class="far fa-eye"></i></button></td>';
-                                    html += '<td class="text-center">'+datos.puntos.comprobante+'</td>';
-                                    html += '<td class="text-center">'+datos.puntos.fecha_registro_facturacion+'</td>';
-                                    html += '<td class="text-center">'+datos.puntos.total+'</td>';
+                                    html += '<td class="text-center">'+item.comprobante+'</td>';
+                                    html += '<td class="text-center">'+item.fecha_registro_facturacion+'</td>';
+                                    html += '<td class="text-center">'+item.total+'</td>';
                                 html += '</tr>';
+                                });
                             }
 
                             DOM.listado_pedidos_puntos.html(html); 
                             $("#cargando").modal('hide');        
-                        }, 2000); 
+                        }, 100); 
                                                                
                     }else{
                         Validar.alert("warning",resultado.datos.msj.errorInfo[2],2000);
@@ -815,6 +857,7 @@ function setEventos(){
                                     html += '<th class="text-center" scope="col">Descuento</th>';                                    
                                     html += '<th class="text-center" scope="col">Total</th>';                                    
                                     html += '<th class="text-center" scope="col">Ticket</th>';
+                                    html += '<th class="text-center" scope="col">Medio Pago</th>';
                                 html += '</tr>';
                             html += '</thead>';
                             html += '<tbody>';
@@ -830,6 +873,7 @@ function setEventos(){
                                     html += '<td class="text-center">S/. '+item.descuentos+'</td>';
                                     html += '<td class="text-center">S/. '+item.total+'</td>';
                                     html += '<td class="text-center">'+item.ticket+'</td>';                                
+                                    html += '<td class="text-center">'+item.medioPago+'</td>';
                                 html += '</tr>';
                                 suma_subtotales  += parseFloat(item.subtotal);  
                                 suma_descuentos+= parseFloat(item.descuentos);  
@@ -896,7 +940,8 @@ function setEventos(){
         DOM.ticket.prop('disabled',false);
         DOM.text_descuento.val("");
         DOM.listado_pedidos_puntos.html('<tr><td colspan="4" class="text-center">Sin resultados</td></tr>');  
-        DOM.array.splice(0,DOM.array.length);              
+        DOM.array.splice(0,DOM.array.length);        
+        DOM.btnDescuento.prop("disabled",false);      
     });
 }
 
@@ -914,9 +959,9 @@ function agregarDescuento(){
     DOM.monto_amortizacion.val("S/. "+parseFloat(nuevo_amortizacion).toFixed(2));
     DOM.ticket.prop("disabled", true);
     DOM.btnDescuento.prop("disabled",true);
-
+    
     $.each( DOM.listado_apagar.find("tr"), function(key, value){
-        $cantidad = parseInt($(this).find("td").eq(2).html());
+        $cantidad = parseInt($(this).find("td").eq(2).find("input").val());
         $precio = parseFloat($(this).find("td").eq(3).html().split(" ")[1]);
         $subtotal = $cantidad*$precio;        
         $importe = parseFloat($subtotal-($subtotal*parseFloat(DOM.text_descuento.val().split(" ")[0])/100)).toFixed(2);
@@ -926,6 +971,22 @@ function agregarDescuento(){
         $(this).find("td").eq(5).html(`S/. ${$importe}`);
     });
 }
+
+function borrarDescuento(){
+    DOM.text_descuento.val("");
+    DOM.ticket.val("");
+    DOM.ticket.prop("disabled", false);
+    DOM.btnDescuento.prop("disabled",false);
+
+    DOM.monto_descuento.val("S/.0.00 ");
+    DOM.monto_amortizacion.val(DOM.monto.val());
+        
+    $.each( DOM.listado_apagar.find("tr"), function(key, value){
+        $descuento = parseFloat(0.00).toFixed(2);
+        $(this).find("td").eq(4).html(`S/. ${$descuento}`);
+    });
+}
+
 
 function abrirDetalle(id_pedido){
     var funcion = function (resultado) {        

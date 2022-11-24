@@ -165,16 +165,13 @@ function iniciarMesa(item,detalle){
                 html += '<div id="detalle-pedido'+item.id_mesa+'">';
                     $.each(detalle,function(key,value){
                         if ( item.id_mesa == value.id_mesa ) {                                
-                            html += '<div class="btn btn-default btn-lg btn-block alert" role="alert" style="height: 68px;" onclick="cambiarEstado('+value.id+","+item.id_mesa+')">';                        
-                                html += '<p class="alert-heading" style="font: oblique bold 75% cursive;color: white;font-size: 30px;">'+value.cantidad+' '+value.producto+'</p>';
-                                html += '<p style="font: oblique bold 45% cursive;color: white;">'+value.nota+ '</p>';
-                            html += '</div>'; 
+                            n
                         }                                 
                     });
                 html += '</div>';  
                 /*CUERPO*/
                 /*PIE*/
-                html += '<p><small>'+item.empleado+'</small></p>';                                            
+                html += '<p style="margin-top:40px;font-size: 20px;"><small>'+item.empleado+'</small></p>';                                            
                 /*PIE*/
             html += '</div>';
         html += '</div>';
@@ -189,9 +186,9 @@ function tomaPedido(tabla,detalle){
         var referencia = this.dataset.id; 
         $.each(detalle,function(key,value){
             if ( referencia == value.id_mesa ) {                                
-                html += '<div class="btn btn-default btn-lg btn-block alert" role="alert" style="height: 68px;" onclick="cambiarEstado('+value.id+","+value.id_mesa+')">';                                        
+                html += '<div class="btn btn-default btn-lg btn-block alert" role="alert" style="height: 68px;color: white;" onclick="cambiarEstado('+value.id+","+value.id_mesa+')">';                                        
                     html += '<h5 class="alert-heading" style="font: oblique bold 75% cursive;color: white;font-size: 30px;">'+value.cantidad+' '+value.producto+'</h5>';
-                    html += '<p style="font: oblique bold 45% cursive;color: white;">'+value.nota+'</p>';
+                    html += '<p style="font: oblique bold 45% cursive;color: white;font-size: 20px;">'+value.nota+'</p>';
                 html += '</div>'; 
             }                                 
         });
@@ -427,8 +424,8 @@ function iniciarMesa2(item,detalle){
                 /*CUERPO*/
                 html += '<div id="cdetalle-pedido'+item.id_mesa+'">';
                     $.each(item.children,function(key,value){                        
-                        html += '<div class="btn btn-default btn-lg btn-block alert" role="alert" style="height: 68px;" onclick="cambiarEstado2('+value.id+","+item.id_mesa+')">';
-                            html += '<p class="alert-heading" style="font: oblique bold 75% cursive;color: white;font-size: 30px;">'+value.cantidad+' '+value.producto+'</p>';
+                        html += '<div class="btn btn-default btn-lg btn-block alert" role="alert" style="height: 68px;color: white;" onclick="cambiarEstado2('+value.id+","+item.id_mesa+')">';
+                            html += '<h5 class="alert-heading" style="font: oblique bold 75% cursive;color: white;font-size: 30px;">'+value.cantidad+' '+value.producto+'</h5>';
                             html += '<p style="font: oblique bold 45% cursive;color: white;font-size: 20px;">'+value.nota+ '</p>';
                         html += '</div>';                          
                     });

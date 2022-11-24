@@ -21,7 +21,7 @@
             <div class="modal-dialog modal-dialog-centered">                        
                 <div class="modal-content">
                     <div class="modal-header">
-                        ¿Desea cerrar la sesión del mesero?
+                        ¿Desea cerrar la sesión del barista?
                     </div>
                     <div class="modal-body">                            
                         <div class="row justify-content-center">

@@ -175,20 +175,23 @@
                                 MedioPago
                                 <select class="form-control" id="cboMedioPago"></select>
                             </div>
-                        <div class="col-md-7" style="margin-top:30px;height: 300px;overflow-x:hidden;overflow-y:scroll;white-space:nowrap">
+                        <div class="col-md-8" style="margin-top:30px;height: 300px;overflow-x:hidden;overflow-y:scroll;white-space:nowrap">
                             <div class="row">
-                                <div class="col-md-7">
+                                <div class="col-md-6">
                                     Ticket
                                     <input type="text" class="form-control" id="text_ticket">
                                 </div>
-                                <div class="col-md-3">
+                                <div class="col-md-2">
                                     Descuento
                                     <input type="text" class="form-control" id="text_descuento" disabled>
                                 </div>
-
                                 <div class="col-md-2">
                                     <br>
                                     <button id="btnDescuento" type="button" class="btn btn-secondary btn-lg btn-block" onclick="agregarDescuento()"><i class="fas fa-file-import"></i></button>
+                                </div>
+                                <div class="col-md-2">
+                                <br>
+                                    <button id="btnBorrarDescuento" type="button" class="btn btn-secondary btn-lg btn-danger" onclick="borrarDescuento()"><i class="fas fa-ban"></i></button>
                                 </div>
                             </div>
                             <div class="row" style="margin-top:15px;">
@@ -210,7 +213,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-5" style="margin-top:30px;height: 300px;overflow-x:hidden;overflow-y:scroll;white-space:nowrap">
+                        <div class="col-md-4" style="margin-top:30px;height: 300px;overflow-x:hidden;overflow-y:scroll;white-space:nowrap">
                             <input id="cantidad_puntos" type="hidden">
                             <div class="row">
                                 <div class="col-md-12">
