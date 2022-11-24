@@ -63,7 +63,7 @@
                                     <button type="button" class="btn btn-success btn-block" id="FiltrarReporte"><i class="fas fa-filter"></i> Filtrar</button>
                                 </div>
                                 <div class="col-6">
-                                    <button type="button" class="btn btn-danger btn-block" id="CerrarReporte"><i class="fas fa-sign-out-alt"></i> Salir</button>
+                                    <button type="button" class="btn btn-danger btn-block" id="CerrarReporte"><i class="fas fa-sign-out-alt"></i> Cerrar</button>
                                 </div>
                             </div>                              
                         </div>

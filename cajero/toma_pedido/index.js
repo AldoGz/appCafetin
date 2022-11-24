@@ -888,6 +888,7 @@ function setEventos(){
                                     html += '<th class="text-center" scope="col">Item</th>';
                                     html += '<th class="text-center" scope="col">Producto</th>';
                                     html += '<th class="text-center" scope="col">Cantidad</th>';
+                                    html += '<th class="text-center" scope="col">Precio</th>';
                                     html += '<th class="text-center" scope="col">Monto</th>';
                                 html += '</tr>';
                             html += '</thead>';
@@ -897,6 +898,7 @@ function setEventos(){
                                     html += '<td class="text-center">'+(i+1)+'</td>';
                                     html += '<td class="text-center">'+item.nombre+'</td>';
                                     html += '<td class="text-center">'+item.cantidad+'</td>';
+                                    html += '<td class="text-center">'+item.precio+'</td>';
                                     html += '<td class="text-center">S/. '+item.monto+'</td>';
                                 html += '</tr>';
                                 suma  += parseFloat(item.monto);  

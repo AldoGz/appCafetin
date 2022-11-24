@@ -1255,12 +1255,13 @@ class Pedido extends Conexion {
                             tp.id_producto as id_producto,
                             pr.nombre as nombre, 
                             tp.cantidad as cantidad, 
+                            tp.precio as precio,
                             tp.cantidad*tp.precio as monto 
                         FROM facturacion fac 
-                        INNER JOIN toma_pedido tp on tp.id_pedido=fac.id_pedido 
+                        INNER JOIN toma_pedido tp on tp.id_facturacion=fac.id
                         INNER JOIN producto pr on tp.id_producto=pr.id 
-                        WHERE DATE_FORMAT(fac.fecha_registro, '%Y-%m-%d %H:%i:%S') >= :0 AND DATE_FORMAT(fac.fecha_registro, '%Y-%m-%d %H:%i:%S') <= :1 AND tp.estado in ('','6')
-                        GROUP BY pr.nombre";
+                        WHERE DATE_FORMAT(fac.fecha_registro, '%Y-%m-%d %H:%i:%S') >= :0 AND DATE_FORMAT(fac.fecha_registro, '%Y-%m-%d %H:%i:%S') <= :1 AND tp.estado in ('','6')";
+                        
             }
             $resultado = $this->consultarFilas($sql,[$fecha_inicio,$fecha_fin]); 
             return array("rpt"=>true,"msj"=>$resultado);
