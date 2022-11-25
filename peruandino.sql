@@ -1,13 +1,14 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 4.9.10
 -- https://www.phpmyadmin.net/
 --
--- Servidor: 127.0.0.1
--- Tiempo de generación: 19-11-2022 a las 16:45:34
--- Versión del servidor: 10.4.24-MariaDB
--- Versión de PHP: 7.4.29
+-- Servidor: localhost:3306
+-- Tiempo de generación: 25-11-2022 a las 15:16:21
+-- Versión del servidor: 8.0.30
+-- Versión de PHP: 7.4.19
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
@@ -45,10 +46,10 @@ DELIMITER ;
 --
 
 CREATE TABLE `categoria` (
-  `id` int(11) NOT NULL,
+  `id` int NOT NULL,
   `nombre` varchar(75) NOT NULL,
-  `estado` int(11) NOT NULL DEFAULT 1,
-  `id_tipo_servicio` int(11) NOT NULL,
+  `estado` int NOT NULL DEFAULT '1',
+  `id_tipo_servicio` int NOT NULL,
   `foto` varchar(255) NOT NULL DEFAULT 'defecto.jpg'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -87,19 +88,19 @@ INSERT INTO `categoria` (`id`, `nombre`, `estado`, `id_tipo_servicio`, `foto`) V
 --
 
 CREATE TABLE `empleado` (
-  `id` int(11) NOT NULL,
+  `id` int NOT NULL,
   `dni` char(8) NOT NULL,
   `nombres` varchar(75) NOT NULL,
   `apellido_paterno` varchar(75) NOT NULL,
   `apellido_materno` varchar(75) NOT NULL,
-  `sexo` int(11) NOT NULL,
+  `sexo` int NOT NULL,
   `direccion` varchar(100) NOT NULL,
   `tele_uno` varchar(25) DEFAULT NULL,
   `tele_dos` varchar(25) DEFAULT NULL,
-  `fecha_registro` datetime NOT NULL DEFAULT current_timestamp(),
-  `estado` int(11) NOT NULL DEFAULT 1,
-  `id_tipo_empleado` int(11) NOT NULL,
-  `ubicacion` int(11) NOT NULL DEFAULT 1
+  `fecha_registro` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `estado` int NOT NULL DEFAULT '1',
+  `id_tipo_empleado` int NOT NULL,
+  `ubicacion` int NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -125,7 +126,7 @@ INSERT INTO `empleado` (`id`, `dni`, `nombres`, `apellido_paterno`, `apellido_ma
 --
 
 CREATE TABLE `estado_proceso` (
-  `id` int(11) NOT NULL,
+  `id` int NOT NULL,
   `toma_pedido` varchar(100) DEFAULT NULL,
   `pedido` varchar(100) DEFAULT NULL,
   `estado_convencional_mesa` varchar(75) DEFAULT NULL
@@ -150,25 +151,25 @@ INSERT INTO `estado_proceso` (`id`, `toma_pedido`, `pedido`, `estado_convenciona
 --
 
 CREATE TABLE `facturacion` (
-  `id` int(11) NOT NULL,
-  `id_pedido` int(11) NOT NULL,
+  `id` int NOT NULL,
+  `id_pedido` int NOT NULL,
   `id_tipo_comprobante` char(2) NOT NULL,
-  `numero` int(11) DEFAULT NULL,
-  `correlativo` int(11) DEFAULT NULL,
-  `fecha_registro` datetime NOT NULL DEFAULT current_timestamp(),
+  `numero` int DEFAULT NULL,
+  `correlativo` int DEFAULT NULL,
+  `fecha_registro` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `documento` varchar(11) DEFAULT NULL,
   `razon_social` varchar(255) DEFAULT NULL,
   `direccion` varchar(150) DEFAULT NULL,
   `usuario` varchar(100) NOT NULL,
   `monto` decimal(6,2) NOT NULL,
-  `puntos` int(11) NOT NULL,
-  `estado_puntos` int(11) NOT NULL DEFAULT 1,
+  `puntos` int NOT NULL,
+  `estado_puntos` int NOT NULL DEFAULT '1',
   `monto_descuento` decimal(6,2) NOT NULL,
   `monto_amortizacion` decimal(6,2) NOT NULL,
   `ticket` varchar(32) NOT NULL,
   `producto` varchar(100) NOT NULL,
-  `cantidad_producto` int(11) NOT NULL,
-  `Id_medio_pago` int(11) NOT NULL DEFAULT 1
+  `cantidad_producto` int NOT NULL,
+  `Id_medio_pago` int NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -532,7 +533,8 @@ INSERT INTO `facturacion` (`id`, `id_pedido`, `id_tipo_comprobante`, `numero`, `
 (359, 340, '03', 1, 351, '2022-11-18 22:35:23', '', '', '', 'jhgjh', '25.00', 25, 1, '0.00', '25.00', '', 'ORIANA VASO DOMO', 4, 1),
 (360, 338, '03', 1, 352, '2022-11-18 22:37:29', '', '', '', 'teererery', '41.50', 41, 1, '0.00', '41.50', '', 'SANDWICH DE POLLO CLASICOAMERICANO GRANDECAPUCCHINO ESPRESATEHUMITA', 5, 1),
 (361, 336, '03', 1, 353, '2022-11-18 22:40:09', '', '', '', 'kk', '42.00', 42, 1, '0.00', '42.00', '', 'HUMITACAPUCCHINO SANDWICH DE PAVOAMERICANO GRANDESANDWICH DE PAVO', 5, 1),
-(362, 339, '03', 1, 354, '2022-11-18 22:44:48', '', '', '', 'jjj', '41.00', 41, 1, '0.00', '41.00', '', 'CAPUCCHINO ORIANA FRAPPE DE MANGOKEKE DE CAFE', 4, 1);
+(362, 339, '03', 1, 354, '2022-11-18 22:44:48', '', '', '', 'jjj', '41.00', 41, 1, '0.00', '41.00', '', 'CAPUCCHINO ORIANA FRAPPE DE MANGOKEKE DE CAFE', 4, 1),
+(363, 342, '01', 1, 3, '2022-11-25 10:11:11', '', '', '', 'JORGE', '5.00', 5, 1, '0.00', '5.00', '', 'INFUSION DE PEREJIL MAS LIMON', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -541,15 +543,15 @@ INSERT INTO `facturacion` (`id`, `id_pedido`, `id_tipo_comprobante`, `numero`, `
 --
 
 CREATE TABLE `log` (
-  `id` int(11) NOT NULL,
-  `id_mesa` int(11) NOT NULL,
-  `id_pedido` int(11) NOT NULL,
-  `id_facturacion` int(11) NOT NULL,
+  `id` int NOT NULL,
+  `id_mesa` int NOT NULL,
+  `id_pedido` int NOT NULL,
+  `id_facturacion` int NOT NULL,
   `id_tipo_comprobante` char(2) NOT NULL,
-  `numero` int(11) NOT NULL,
-  `correlativo` int(11) NOT NULL,
-  `new_correlativo` int(11) NOT NULL,
-  `fecha_registro` timestamp NOT NULL DEFAULT current_timestamp()
+  `numero` int NOT NULL,
+  `correlativo` int NOT NULL,
+  `new_correlativo` int NOT NULL,
+  `fecha_registro` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -559,10 +561,10 @@ CREATE TABLE `log` (
 --
 
 CREATE TABLE `medios_pago` (
-  `id` int(11) NOT NULL,
+  `id` int NOT NULL,
   `descripcion` varchar(50) CHARACTER SET latin1 COLLATE latin1_spanish_ci NOT NULL,
-  `estado` int(11) NOT NULL DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `estado` int NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Volcado de datos para la tabla `medios_pago`
@@ -583,12 +585,12 @@ INSERT INTO `medios_pago` (`id`, `descripcion`, `estado`) VALUES
 --
 
 CREATE TABLE `mesa` (
-  `id` int(11) NOT NULL,
+  `id` int NOT NULL,
   `numero` varchar(100) NOT NULL,
   `ubicacion` varchar(15) CHARACTER SET latin1 COLLATE latin1_spanish_ci NOT NULL DEFAULT '1',
-  `estado` int(11) NOT NULL DEFAULT 1,
-  `estado_convencional` int(11) NOT NULL DEFAULT 1,
-  `disponibilidad` int(11) DEFAULT 0
+  `estado` int NOT NULL DEFAULT '1',
+  `estado_convencional` int NOT NULL DEFAULT '1',
+  `disponibilidad` int DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -596,7 +598,7 @@ CREATE TABLE `mesa` (
 --
 
 INSERT INTO `mesa` (`id`, `numero`, `ubicacion`, `estado`, `estado_convencional`, `disponibilidad`) VALUES
-(1, 'Barra 1', '2', 1, 1, 0),
+(1, 'Barra 1', '2', 1, 2, 0),
 (2, 'Barra 2', '2', 1, 1, 0),
 (3, 'Barra 3', '2', 1, 1, 0),
 (4, 'Barra 4', '2', 1, 1, 0),
@@ -634,12 +636,12 @@ INSERT INTO `mesa` (`id`, `numero`, `ubicacion`, `estado`, `estado_convencional`
 --
 
 CREATE TABLE `pedido` (
-  `id` int(11) NOT NULL,
-  `id_mesa` int(11) NOT NULL,
-  `id_empleado` int(11) NOT NULL,
-  `fecha_registro` datetime NOT NULL DEFAULT current_timestamp(),
-  `estado` int(11) NOT NULL DEFAULT 1,
-  `nombre_cliente` text DEFAULT NULL
+  `id` int NOT NULL,
+  `id_mesa` int NOT NULL,
+  `id_empleado` int NOT NULL,
+  `fecha_registro` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `estado` int NOT NULL DEFAULT '1',
+  `nombre_cliente` text
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -976,7 +978,8 @@ INSERT INTO `pedido` (`id`, `id_mesa`, `id_empleado`, `fecha_registro`, `estado`
 (337, 5, 2, '2022-11-18 21:53:43', 2, 'ytrytruytr'),
 (338, 9, 2, '2022-11-18 22:17:17', 2, 'teererery'),
 (339, 19, 9, '2022-11-18 22:28:06', 2, 'jjj'),
-(340, 18, 9, '2022-11-18 22:28:39', 2, 'jhgjh');
+(340, 18, 9, '2022-11-18 22:28:39', 2, 'jhgjh'),
+(342, 1, 2, '2022-11-25 10:02:28', 1, 'JORGE');
 
 -- --------------------------------------------------------
 
@@ -985,12 +988,12 @@ INSERT INTO `pedido` (`id`, `id_mesa`, `id_empleado`, `fecha_registro`, `estado`
 --
 
 CREATE TABLE `producto` (
-  `id` int(11) NOT NULL,
+  `id` int NOT NULL,
   `nombre` varchar(75) NOT NULL,
   `precio` decimal(10,2) NOT NULL,
   `descripcion` text NOT NULL,
-  `estado` int(11) NOT NULL DEFAULT 1,
-  `id_categoria` int(11) NOT NULL,
+  `estado` int NOT NULL DEFAULT '1',
+  `id_categoria` int NOT NULL,
   `foto` varchar(255) NOT NULL DEFAULT 'defecto.jpg'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -1180,13 +1183,13 @@ INSERT INTO `producto` (`id`, `nombre`, `precio`, `descripcion`, `estado`, `id_c
 --
 
 CREATE TABLE `promocion_bonus` (
-  `id` int(11) NOT NULL,
+  `id` int NOT NULL,
   `ticket` varchar(32) NOT NULL,
   `nombre` varchar(200) NOT NULL,
   `fecha_inicio` date NOT NULL,
   `fecha_fin` date NOT NULL,
   `porcentaje` decimal(6,2) NOT NULL,
-  `estado` int(11) NOT NULL DEFAULT 1
+  `estado` int NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -1204,11 +1207,11 @@ INSERT INTO `promocion_bonus` (`id`, `ticket`, `nombre`, `fecha_inicio`, `fecha_
 --
 
 CREATE TABLE `promocion_puntos` (
-  `id` int(11) NOT NULL,
-  `id_producto` int(11) NOT NULL,
-  `cantidad_puntos` int(11) NOT NULL,
-  `cantidad_producto` int(11) NOT NULL,
-  `estado` int(11) NOT NULL DEFAULT 1
+  `id` int NOT NULL,
+  `id_producto` int NOT NULL,
+  `cantidad_puntos` int NOT NULL,
+  `cantidad_producto` int NOT NULL,
+  `estado` int NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -1227,11 +1230,11 @@ INSERT INTO `promocion_puntos` (`id`, `id_producto`, `cantidad_puntos`, `cantida
 --
 
 CREATE TABLE `serie_comprobante` (
-  `id` int(11) NOT NULL,
+  `id` int NOT NULL,
   `id_tipo_comprobante` char(2) NOT NULL,
-  `numero` int(11) NOT NULL,
-  `correlativo` int(11) NOT NULL DEFAULT 1,
-  `estado` int(11) NOT NULL DEFAULT 1
+  `numero` int NOT NULL,
+  `correlativo` int NOT NULL DEFAULT '1',
+  `estado` int NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -1239,7 +1242,7 @@ CREATE TABLE `serie_comprobante` (
 --
 
 INSERT INTO `serie_comprobante` (`id`, `id_tipo_comprobante`, `numero`, `correlativo`, `estado`) VALUES
-(1, '01', 1, 3, 1),
+(1, '01', 1, 4, 1),
 (2, '01', 2, 1, 1),
 (3, '02', 1, 355, 1),
 (4, '02', 2, 1, 1),
@@ -1274,9 +1277,9 @@ INSERT INTO `tipo_comprobante` (`id`, `nombre`, `abreviatura`) VALUES
 --
 
 CREATE TABLE `tipo_empleado` (
-  `id` int(11) NOT NULL,
+  `id` int NOT NULL,
   `descripcion` varchar(75) NOT NULL,
-  `estado` int(11) NOT NULL DEFAULT 1
+  `estado` int NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -1297,9 +1300,9 @@ INSERT INTO `tipo_empleado` (`id`, `descripcion`, `estado`) VALUES
 --
 
 CREATE TABLE `tipo_servicio` (
-  `id` int(11) NOT NULL,
+  `id` int NOT NULL,
   `nombre` varchar(75) NOT NULL,
-  `estado` int(11) NOT NULL DEFAULT 1,
+  `estado` int NOT NULL DEFAULT '1',
   `abreviatura` char(2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -1318,20 +1321,20 @@ INSERT INTO `tipo_servicio` (`id`, `nombre`, `estado`, `abreviatura`) VALUES
 --
 
 CREATE TABLE `toma_pedido` (
-  `id` int(11) NOT NULL,
-  `id_pedido` int(11) NOT NULL,
-  `id_producto` int(11) NOT NULL,
-  `cantidad` int(11) NOT NULL,
+  `id` int NOT NULL,
+  `id_pedido` int NOT NULL,
+  `id_producto` int NOT NULL,
+  `cantidad` int NOT NULL,
   `precio` decimal(10,2) NOT NULL,
-  `estado` int(11) NOT NULL DEFAULT 1,
-  `nota` text DEFAULT NULL,
-  `kpi` text DEFAULT NULL,
-  `observaciones` text DEFAULT NULL,
-  `item` int(11) NOT NULL,
-  `timbre` int(11) NOT NULL DEFAULT 1,
-  `id_facturacion` int(11) DEFAULT NULL,
-  `fecha_registro` datetime NOT NULL DEFAULT current_timestamp(),
-  `descuento` decimal(16,2) NOT NULL
+  `estado` int NOT NULL DEFAULT '1',
+  `nota` text,
+  `kpi` text,
+  `observaciones` text,
+  `item` int NOT NULL,
+  `timbre` int NOT NULL DEFAULT '1',
+  `id_facturacion` int DEFAULT NULL,
+  `fecha_registro` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `descuento` decimal(16,2) NOT NULL DEFAULT '0.00'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -2671,7 +2674,8 @@ INSERT INTO `toma_pedido` (`id`, `id_pedido`, `id_producto`, `cantidad`, `precio
 (1364, 339, 129, 1, '13.00', 6, NULL, '05:19', NULL, 8, 0, 362, '2022-11-18 22:28:06', '0.00'),
 (1365, 340, 127, 2, '11.50', 6, NULL, '04:40', NULL, 6, 0, 359, '2022-11-18 22:28:39', '0.00'),
 (1366, 340, 257, 2, '1.00', 6, NULL, '04:52', NULL, 1, 0, 359, '2022-11-18 22:28:39', '0.00'),
-(1367, 339, 249, 1, '7.00', 6, NULL, '05:21', NULL, 4, 0, 362, '2022-11-18 22:29:50', '0.00');
+(1367, 339, 249, 1, '7.00', 6, NULL, '05:21', NULL, 4, 0, 362, '2022-11-18 22:29:50', '0.00'),
+(1368, 342, 119, 1, '5.00', 6, NULL, '00:17', NULL, 1, 0, 363, '2022-11-25 10:02:28', '0.00');
 
 -- --------------------------------------------------------
 
@@ -2680,12 +2684,12 @@ INSERT INTO `toma_pedido` (`id`, `id_pedido`, `id_producto`, `cantidad`, `precio
 --
 
 CREATE TABLE `turnos` (
-  `id` int(11) NOT NULL,
+  `id` int NOT NULL,
   `descripcion` varchar(50) CHARACTER SET latin1 COLLATE latin1_spanish_ci NOT NULL,
   `inicio` time NOT NULL,
   `fin` time NOT NULL,
-  `estado` int(11) NOT NULL DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `estado` int NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Volcado de datos para la tabla `turnos`
@@ -2703,10 +2707,10 @@ INSERT INTO `turnos` (`id`, `descripcion`, `inicio`, `fin`, `estado`) VALUES
 --
 
 CREATE TABLE `ubicaciones` (
-  `id` int(11) NOT NULL,
+  `id` int NOT NULL,
   `descripcion` varchar(50) CHARACTER SET latin1 COLLATE latin1_spanish_ci NOT NULL,
-  `estado` int(11) NOT NULL DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `estado` int NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Volcado de datos para la tabla `ubicaciones`
@@ -2725,9 +2729,9 @@ INSERT INTO `ubicaciones` (`id`, `descripcion`, `estado`) VALUES
 --
 
 CREATE TABLE `usuario` (
-  `id` int(11) NOT NULL,
-  `id_empleado` int(11) NOT NULL,
-  `estado` int(11) NOT NULL DEFAULT 0,
+  `id` int NOT NULL,
+  `id_empleado` int NOT NULL,
+  `estado` int NOT NULL DEFAULT '0',
   `clave` varchar(32) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -2754,9 +2758,9 @@ INSERT INTO `usuario` (`id`, `id_empleado`, `estado`, `clave`) VALUES
 --
 
 CREATE TABLE `utensilio` (
-  `id` int(11) NOT NULL,
+  `id` int NOT NULL,
   `nombre` varchar(75) NOT NULL,
-  `estado` int(11) NOT NULL DEFAULT 1
+  `estado` int NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -2784,9 +2788,9 @@ INSERT INTO `utensilio` (`id`, `nombre`, `estado`) VALUES
 --
 
 CREATE TABLE `utensilio_producto` (
-  `id` int(11) NOT NULL,
-  `id_producto` int(11) NOT NULL,
-  `id_utensilio` int(11) NOT NULL
+  `id` int NOT NULL,
+  `id_producto` int NOT NULL,
+  `id_utensilio` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -2946,121 +2950,121 @@ ALTER TABLE `utensilio_producto`
 -- AUTO_INCREMENT de la tabla `categoria`
 --
 ALTER TABLE `categoria`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT de la tabla `empleado`
 --
 ALTER TABLE `empleado`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de la tabla `estado_proceso`
 --
 ALTER TABLE `estado_proceso`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `facturacion`
 --
 ALTER TABLE `facturacion`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=363;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=364;
 
 --
 -- AUTO_INCREMENT de la tabla `log`
 --
 ALTER TABLE `log`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2593;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2593;
 
 --
 -- AUTO_INCREMENT de la tabla `medios_pago`
 --
 ALTER TABLE `medios_pago`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `mesa`
 --
 ALTER TABLE `mesa`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT de la tabla `pedido`
 --
 ALTER TABLE `pedido`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=341;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=343;
 
 --
 -- AUTO_INCREMENT de la tabla `producto`
 --
 ALTER TABLE `producto`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=264;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=264;
 
 --
 -- AUTO_INCREMENT de la tabla `promocion_bonus`
 --
 ALTER TABLE `promocion_bonus`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `promocion_puntos`
 --
 ALTER TABLE `promocion_puntos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `serie_comprobante`
 --
 ALTER TABLE `serie_comprobante`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `tipo_empleado`
 --
 ALTER TABLE `tipo_empleado`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `tipo_servicio`
 --
 ALTER TABLE `tipo_servicio`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `toma_pedido`
 --
 ALTER TABLE `toma_pedido`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1368;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1369;
 
 --
 -- AUTO_INCREMENT de la tabla `turnos`
 --
 ALTER TABLE `turnos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `ubicaciones`
 --
 ALTER TABLE `ubicaciones`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de la tabla `utensilio`
 --
 ALTER TABLE `utensilio`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT de la tabla `utensilio_producto`
 --
 ALTER TABLE `utensilio_producto`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
